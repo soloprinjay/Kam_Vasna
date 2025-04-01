@@ -1,7 +1,31 @@
 from django.contrib import admin
-from apps.blog.models import Post, Category
+from .models import Category, Post, Comment
 
-# Register your models here.
 
-admin.site.register(Post)
-admin.site.register(Category)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'category', 'created_on', 'last_modified')
+    list_filter = ('category', 'created_on', 'last_modified')
+    search_fields = ('title', 'category__name', 'description')
+    prepopulated_fields = {'slug': ('title',)}
+    autocomplete_fields = ['category']
+    readonly_fields = ('created_on', 'last_modified')
+    fieldsets = (
+        ('Basic Information', {'fields': ('title', 'slug', 'category', 'description', 'image')}),
+        ('Metadata', {'fields': ('created_on', 'last_modified', 'ratings', 'tags')}),
+    )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'post', 'email', 'created')
+    list_filter = ('created', 'updated')
+    search_fields = ('name', 'email', 'body')
+    autocomplete_fields = ['post']
+    readonly_fields = ('created', 'updated')

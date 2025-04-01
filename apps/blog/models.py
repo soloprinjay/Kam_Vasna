@@ -3,8 +3,7 @@ from taggit.managers import TaggableManager
 from django_ckeditor_5.fields import CKEditor5Field
 from star_ratings.models import Rating
 from django.utils.text import slugify
-
-
+import re
 
 
 # Create your models here.
@@ -27,11 +26,11 @@ class Post(models.Model):
     ratings = models.ForeignKey(Rating, on_delete=models.CASCADE, null=True, blank=True)
     tags = TaggableManager()
 
-
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        super(Post, self).save(*args, **kwargs)
-
+        if not self.slug:
+            clean_title = re.sub(r'[^a-zA-Z0-9\s-]', '', self.title)  # Remove special characters
+            self.slug = slugify(clean_title)  # Convert title to slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
