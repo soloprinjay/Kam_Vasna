@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>संपर्क फॉर्म</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#f8f3d9',
+                        brown: {
+                            light: '#8B7355',
+                            DEFAULT: '#6B5B4B',
+                            dark: '#5D4037',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+
+<body>
+<!-- Navbar start -->
+{% include 'navbar.html' %}
+<!-- Navbar end -->
+
+{% block content %}
+{% endblock %}
+
+<!-- Footer start -->
+
+{% include 'footer.html' %}
+
+
+<!-- Footer end -->
+
+
+</body>
+
+<!-- JavaScript for Mobile Menu Toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton.addEventListener('click', function () {
+            // Toggle the mobile menu visibility
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+            } else {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    });
+</script>
+
+
+</html>
