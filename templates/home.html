@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+ <!-- Hero Section -->
+ <section class="relative bg-gradient-to-r from-orange-500 to-amber-500 text-white">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M0 20 L40 20 M20 0 L20 40" stroke="white" stroke-width="2" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#pattern)" />
+        </svg>
+    </div>
+    
+    <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <div class="flex flex-col md:flex-row items-center">
+            <!-- Text Content -->
+            <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                    कहानियों की अनोखी दुनिया में आपका स्वागत है
+                </h1>
+                <p class="text-lg md:text-xl mb-8 text-amber-100">
+                    हमारे संग्रह से सर्वश्रेष्ठ हिंदी कहानियों का आनंद लें। प्रेरणादायक, मनोरंजक और ज्ञानवर्धक कहानियों का खजाना यहाँ आपका इंतज़ार कर रहा है।
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#" class="bg-white text-orange-600 hover:bg-orange-100 font-bold py-3 px-8 rounded-full transition duration-300 text-center">
+                        पढ़ना शुरू करें
+                    </a>
+                    <a href="#" class="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 font-bold py-3 px-8 rounded-full transition duration-300 text-center">
+                        श्रेणियाँ देखें
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Hero Image -->
+            <div class="md:w-1/2">
+                <div class="relative">
+                    <!-- Decorative Elements -->
+                    <div class="absolute -top-6 -left-6 w-20 h-20 bg-amber-300 rounded-full opacity-50"></div>
+                    <div class="absolute -bottom-6 -right-6 w-16 h-16 bg-orange-700 rounded-full opacity-50"></div>
+                    
+                    <!-- Main Image with Frame -->
+                    <div class="relative z-10 bg-white p-3 rounded-lg shadow-xl transform rotate-1">
+                        <img src="https://i.ytimg.com/vi/xp-tQv1J4fE/maxresdefault.jpg" alt="हिंदी कहानियाँ" class="rounded w-full h-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Featured Categories -->
+        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg text-center hover:bg-white/30 transition duration-300">
+                <i class="fas fa-book text-3xl mb-2"></i>
+                <h3 class="font-bold">लोककथाएँ</h3>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg text-center hover:bg-white/30 transition duration-300">
+                <i class="fas fa-magic text-3xl mb-2"></i>
+                <h3 class="font-bold">फैंटेसी</h3>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg text-center hover:bg-white/30 transition duration-300">
+                <i class="fas fa-heart text-3xl mb-2"></i>
+                <h3 class="font-bold">प्रेम कथाएँ</h3>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg text-center hover:bg-white/30 transition duration-300">
+                <i class="fas fa-lightbulb text-3xl mb-2"></i>
+                <h3 class="font-bold">प्रेरक कहानियाँ</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Featured Stories Section -->
+<section class="bg-amber-100 py-12 md:py-16">
+<div class="container mx-auto px-4">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-orange-800 mb-4">लोकप्रिय कहानियाँ</h2>
+        <p class="text-orange-700 max-w-3xl mx-auto">हमारे पाठकों द्वारा सबसे अधिक पसंद की गई कहानियाँ। इन कहानियों में आपको प्रेरणा, ज्ञान और मनोरंजन का अनूठा संगम मिलेगा।</p>
+    </div>
+
+    <!-- Stories Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Story Card 1 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://i.ytimg.com/vi/w69_4Xh6zMU/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
+                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">लोककथा</div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">दो दोस्तों की कहानी</h3>
+                <p class="text-gray-600 mb-4">एक समय की बात है, एक गाँव में दो मित्र रहते थे - राम और श्याम। वे बचपन से ही अच्छे दोस्त थे। एक दिन वे जंगल में घूमने गए, जहाँ उन्हें एक भालू दिखाई दिया...</p>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-sm text-gray-500">पढ़ने का समय: 5 मिनट</span>
+                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Card 2 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://i.ytimg.com/vi/A4mYK9CQkMw/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
+                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">ऐतिहासिक</div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">राजा विक्रमादित्य की न्याय प्रियता</h3>
+                <p class="text-gray-600 mb-4">प्राचीन भारत में राजा विक्रमादित्य अपनी न्याय प्रियता के लिए प्रसिद्ध थे। एक बार उनके दरबार में एक अजीब मामला आया। एक व्यापारी और एक गरीब किसान के बीच विवाद था...</p>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-sm text-gray-500">पढ़ने का समय: 7 मिनट</span>
+                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Card 3 -->
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div class="relative">
+                <img src="https://i.ytimg.com/vi/TDISduJl8q4/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
+                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">प्रेरक</div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">मेहनत का फल</h3>
+                <p class="text-gray-600 mb-4">रोहन एक छोटे से गाँव में रहता था। वह बहुत गरीब था लेकिन पढ़ाई में तेज था। उसके माता-पिता मजदूरी करके उसे पढ़ाते थे। रोहन ने ठान लिया था कि वह अपने परिवार की स्थिति बदलेगा...</p>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-sm text-gray-500">पढ़ने का समय: 6 मिनट</span>
+                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- More Stories Section -->
+    <div class="mt-16">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-8 md:p-10 shadow-lg">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-6 md:mb-0 md:mr-8">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-3">और भी रोचक कहानियाँ पढ़ें</h3>
+                    <p class="text-amber-100">हमारे संग्रह में 500+ से अधिक कहानियाँ हैं जो आपको प्रेरित और मनोरंजित करेंगी।</p>
+                </div>
+                <a href="#" class="bg-white text-orange-600 hover:bg-orange-100 font-bold py-3 px-8 rounded-full transition duration-300 text-center whitespace-nowrap">
+                    सभी कहानियाँ देखें
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Full Story Section -->
+<section class="bg-white py-12 md:py-16">
+<div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Story Header -->
+        <div class="text-center mb-10">
+            <span class="inline-block bg-orange-100 text-orange-800 rounded-full px-4 py-1 text-sm font-semibold mb-4">लोककथा</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">दो दोस्तों की कहानी</h2>
+            <div class="flex items-center justify-center text-gray-600 text-sm">
+                <span class="mr-4"><i class="far fa-calendar mr-1"></i> प्रकाशित: 15 मार्च, 2023</span>
+                <span><i class="far fa-clock mr-1"></i> पढ़ने का समय: 5 मिनट</span>
+            </div>
+        </div>
+
+        <!-- Story Content -->
+        <div class="prose prose-lg max-w-none">
+            <p>एक समय की बात है, एक गाँव में दो मित्र रहते थे - राम और श्याम। वे बचपन से ही अच्छे दोस्त थे। एक दिन वे जंगल में घूमने गए, जहाँ उन्हें एक भालू दिखाई दिया।</p>
+            
+            <p>भालू को देखते ही श्याम डर गया और बिना राम की परवाह किए एक पेड़ पर चढ़ गया। राम को पेड़ पर चढ़ना नहीं आता था, इसलिए उसने सोचा कि भालू से बचने का एकमात्र तरीका है मृत होने का नाटक करना। वह जमीन पर लेट गया और साँस रोक ली।</p>
+            
+            <p>भालू राम के पास आया और उसे सूंघने लगा। कहते हैं कि भालू मृत शरीर को नहीं छूते। भालू ने राम के कान में कुछ कहा और वहां से चला गया।</p>
+            
+            <p>जब भालू चला गया, तब श्याम पेड़ से नीचे उतरा और राम से पूछा, "भालू ने तुम्हारे कान में क्या कहा?"</p>
+            
+            <p>राम ने जवाब दिया, "भालू ने कहा कि ऐसे दोस्त से दूर रहो जो मुसीबत के समय साथ छोड़ देता है।"</p>
+            
+            <p>इस कहानी से हमें यह सीख मिलती है कि सच्चा मित्र वही होता है जो मुसीबत के समय साथ देता है। हमें अपने मित्रों का चयन सावधानी से करना चाहिए और कठिन परिस्थितियों में भी उनका साथ देना चाहिए।</p>
+
+            <div class="bg-amber-50 border-l-4 border-orange-500 p-4 my-6">
+                <p class="italic text-orange-800">"मित्र वही है जो विपत्ति के समय काम आए।"</p>
+            </div>
+
+            <p>यह कहानी हमें सिखाती है कि जीवन में सच्ची मित्रता का क्या महत्व है। हमें हमेशा अपने दोस्तों के प्रति वफादार रहना चाहिए और कठिन समय में उनका साथ देना चाहिए।</p>
+        </div>
+
+        <!-- Story Footer -->
+        <div class="mt-10 pt-8 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 sm:mb-0">
+                    <span class="mr-2 text-gray-700">इस कहानी को साझा करें:</span>
+                    <div class="flex space-x-3">
+                        <a href="#" class="text-gray-500 hover:text-blue-600"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-blue-400"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-green-600"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-blue-700"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <a href="#" class="bg-orange-100 text-orange-800 hover:bg-orange-200 px-4 py-2 rounded-full text-sm font-medium transition duration-300">लोककथाएँ</a>
+                    <a href="#" class="bg-orange-100 text-orange-800 hover:bg-orange-200 px-4 py-2 rounded-full text-sm font-medium transition duration-300">नैतिक शिक्षा</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</section>
+
+{% endblock %}

@@ -1,34 +1,23 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>संपर्क फॉर्म</title>
+    <title>हिंदी कहानियाँ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{% static 'js/base.js' %}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream: '#f8f3d9',
-                        brown: {
-                            light: '#8B7355',
-                            DEFAULT: '#6B5B4B',
-                            dark: '#5D4037',
-                        },
-                    },
-                },
-            },
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
         }
-    </script>
+    </style>
 </head>
-
 
 <body>
 <!-- Navbar start -->
-{% include 'navbar.html' %}
+{% include 'header.html' %}
 <!-- Navbar end -->
 
 {% block content %}
@@ -46,18 +35,21 @@
 
 <!-- JavaScript for Mobile Menu Toggle -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const mobileMenuButton = document.getElementById('mobileMenuButton');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        mobileMenuButton.addEventListener('click', function () {
-            // Toggle the mobile menu visibility
-            if (mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.remove('hidden');
-            } else {
-                mobileMenu.classList.add('hidden');
-            }
-        });
+    // Toggle mobile menu
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // Change icon based on menu state
+        const icon = mobileMenuButton.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        } else {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        }
     });
 </script>
 
