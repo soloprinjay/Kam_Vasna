@@ -85,53 +85,25 @@
 
     <!-- Stories Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Story Card 1 -->
+        {% for story in stories %}
         <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
             <div class="relative">
-                <img src="https://i.ytimg.com/vi/w69_4Xh6zMU/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
-                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">लोककथा</div>
+                <img src="{{ story.image_url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+                    {{ story.category }}
+                </div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">दो दोस्तों की कहानी</h3>
-                <p class="text-gray-600 mb-4">एक समय की बात है, एक गाँव में दो मित्र रहते थे - राम और श्याम। वे बचपन से ही अच्छे दोस्त थे। एक दिन वे जंगल में घूमने गए, जहाँ उन्हें एक भालू दिखाई दिया...</p>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-sm text-gray-500">पढ़ने का समय: 5 मिनट</span>
-                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">{{ story.title }}</h3>
+                <p class="text-gray-600 mb-4">{{ story.content|truncatewords:30 }}</p>
+                <div class="flex items-center justify-end mt-4">
+                    <a href="{% url 'story_detail' slug=story.slug %}" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">
+                        पूरी कहानी पढ़ें &rarr;
+                    </a>
                 </div>
             </div>
         </div>
-
-        <!-- Story Card 2 -->
-        <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
-            <div class="relative">
-                <img src="https://i.ytimg.com/vi/A4mYK9CQkMw/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
-                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">ऐतिहासिक</div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">राजा विक्रमादित्य की न्याय प्रियता</h3>
-                <p class="text-gray-600 mb-4">प्राचीन भारत में राजा विक्रमादित्य अपनी न्याय प्रियता के लिए प्रसिद्ध थे। एक बार उनके दरबार में एक अजीब मामला आया। एक व्यापारी और एक गरीब किसान के बीच विवाद था...</p>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-sm text-gray-500">पढ़ने का समय: 7 मिनट</span>
-                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Story Card 3 -->
-        <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
-            <div class="relative">
-                <img src="https://i.ytimg.com/vi/TDISduJl8q4/maxresdefault.jpg" alt="कहानी का चित्र" class="w-full h-56 object-cover">
-                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">प्रेरक</div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">मेहनत का फल</h3>
-                <p class="text-gray-600 mb-4">रोहन एक छोटे से गाँव में रहता था। वह बहुत गरीब था लेकिन पढ़ाई में तेज था। उसके माता-पिता मजदूरी करके उसे पढ़ाते थे। रोहन ने ठान लिया था कि वह अपने परिवार की स्थिति बदलेगा...</p>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-sm text-gray-500">पढ़ने का समय: 6 मिनट</span>
-                    <a href="#" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">पूरी कहानी पढ़ें &rarr;</a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 
     <!-- More Stories Section -->
