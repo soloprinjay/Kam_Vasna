@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Post, Comment
+from .models import Category, Post, Comment, Story
 
 
 @admin.register(Category)
@@ -29,3 +29,12 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('name', 'email', 'body')
     autocomplete_fields = ['post']
     readonly_fields = ('created', 'updated')
+
+
+@admin.register(Story)
+class StoryAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'read_time', 'created_at')
+    list_filter = ('category', 'created_at')
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+    ordering = ('-created_at',)  
