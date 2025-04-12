@@ -3,13 +3,19 @@ from django.views import View
 from .models import Story
 from django.http import Http404
 
+
 # Create your views here.
 
 
 class HomeView(View):
     def get(self, request):
+        stories = Story.objects.order_by('?')[:3]
+        return render(request, 'home.html', {'stories': stories})
+
+class StoriesView(View):
+    def get(self, request):
         stories = Story.objects.all()
-        return render(request, 'home.html', {'stories': stories})     
+        return render(request, 'stories.html', {'stories': stories})        
 
 class StoryDetailView(View):
     def get(self, request, slug):
