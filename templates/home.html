@@ -88,16 +88,16 @@
         {% for story in stories %}
         <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
             <div class="relative">
-                <img src="{{ story.image_url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
                 <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
                     {{ story.category }}
                 </div>
             </div>
             <div class="p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-3">{{ story.title }}</h3>
-                <p class="text-gray-600 mb-4">{{ story.content|truncatewords:30 }}</p>
+                <p class="text-gray-600 mb-4">{{ story.description|safe|truncatewords:30 }}</p>
                 <div class="flex items-center justify-end mt-4">
-                    <a href="{% url 'story_detail' slug=story.slug %}" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">
+                    <a href="{% url 'blog:story_detail' slug=story.slug %}" class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">
                         पूरी कहानी पढ़ें &rarr;
                     </a>
                 </div>
