@@ -14,8 +14,6 @@ class HomeView(View):
 
 class StoriesView(View):
     def get(self, request):
-        stories = Post.objects.all()
-        return render(request, 'stories.html', {'stories': stories})
         category = request.GET.get('category')
         if category:
             stories = Story.objects.filter(category=category)
