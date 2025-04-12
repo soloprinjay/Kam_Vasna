@@ -48,21 +48,4 @@ class Comment(models.Model):
         return self.name      
 
 
-class Story(models.Model):
-    CATEGORY_CHOICES = [
-        ('लोककथा', 'लोककथा'),
-        ('ऐतिहासिक', 'ऐतिहासिक'),
-        ('प्रेरक', 'प्रेरक'),
-    ]
-
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    image_url = models.URLField()
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
-    content = models.TextField()
-    read_time = models.IntegerField(help_text="Minutes to read")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
 
