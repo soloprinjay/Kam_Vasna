@@ -12,7 +12,7 @@ class HomeView(View):
 class StoriesView(View):
     def get(self, request):
         stories = Story.objects.all()
-        return render(request, 'stories.html', {'stories': stories})        
+        return render(request, 'stories.html', {'stories': stories})
 
 class StoryDetailView(View):
     def get(self, request, slug):
