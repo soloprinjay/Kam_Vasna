@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -23,9 +25,9 @@
                 
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex space-x-8">
-                    <a href="{% url 'home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
-                    <a href="{% url 'stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
-                    <a href="{% url 'contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
+                    <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
+                    <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
+                    <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
                 </nav>
                 
                 <!-- Mobile Toggle Button -->
@@ -37,31 +39,31 @@
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="md:hidden hidden pb-4">
                 <nav class="flex flex-col space-y-4">
-                    <a href="{% url 'home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
-                    <a href="{% url 'stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
-                    <a href="{% url 'contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
+                    <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
+                    <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
+                    <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
                 </nav>
             </div>
         </div>
     </header>
 
-    <script>
-        // Toggle mobile menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            // Change icon based on menu state
-            const icon = mobileMenuButton.querySelector('i');
-            if (mobileMenu.classList.contains('hidden')) {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            } else {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            }
-        });
-    </script>
+<!--    <script>-->
+<!--        // Toggle mobile menu-->
+<!--        const mobileMenuButton = document.getElementById('mobile-menu-button');-->
+<!--        const mobileMenu = document.getElementById('mobile-menu');-->
+<!--        -->
+<!--        mobileMenuButton.addEventListener('click', () => {-->
+<!--            mobileMenu.classList.toggle('hidden');-->
+<!--            // Change icon based on menu state-->
+<!--            const icon = mobileMenuButton.querySelector('i');-->
+<!--            if (mobileMenu.classList.contains('hidden')) {-->
+<!--                icon.classList.remove('fa-times');-->
+<!--                icon.classList.add('fa-bars');-->
+<!--            } else {-->
+<!--                icon.classList.remove('fa-bars');-->
+<!--                icon.classList.add('fa-times');-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
 </body>
 </html>
