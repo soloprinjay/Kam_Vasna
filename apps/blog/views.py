@@ -3,6 +3,7 @@ from django.views import View
 from .models import Post
 from django.http import Http404
 
+
 # Create your views here.
 
 
@@ -15,6 +16,18 @@ class StoriesView(View):
     def get(self, request):
         stories = Post.objects.all()
         return render(request, 'stories.html', {'stories': stories})
+        category = request.GET.get('category')
+        if category:
+            stories = Story.objects.filter(category=category)
+        else:
+            stories = Story.objects.all()
+
+        categories = [c[0] for c in Story.CATEGORY_CHOICES]
+        return render(request, 'stories.html', {
+            'stories': stories,
+            'categories': categories,
+            'selected_category': category
+        })
 
 class StoryDetailView(View):
     def get(self, request, slug):
