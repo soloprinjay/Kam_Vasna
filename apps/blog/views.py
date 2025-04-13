@@ -8,11 +8,8 @@ from django.http import Http404
 
 class HomeView(View):
     def get(self, request):
-        stories = Story.objects.order_by('?')[:3]
+        stories = Post.objects.all()
         return render(request, 'home.html', {'stories': stories})
-
-class StoriesView(View):
-    def get(self, request):
         stories = Story.objects.all()
         return render(request, 'stories.html', {'stories': stories})
 
