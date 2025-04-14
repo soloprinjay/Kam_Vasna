@@ -2,89 +2,126 @@
 
 {% block content %}
 
-    <section class="relative bg-gradient-to-r from-orange-600 to-amber-500 text-white py-12 md:py-16">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 opacity-10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-                <defs>
-                    <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M0 20 L40 20 M20 0 L20 40" stroke="white" stroke-width="2" />
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#pattern)" />
-            </svg>
-        </div>
-        
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">लोकप्रिय कहानियाँ</h1>
-                <p class="text-xl text-amber-100">पाठकों द्वारा सबसे अधिक पसंद की गई कहानियाँ। इन कहानियों में आपको प्रेरणा, ज्ञान और मनोरंजन का अनूठा संगम मिलेगा।</p>
-            </div>
-        </div>
-    </section>
+<section class="relative bg-gradient-to-r from-orange-600 to-amber-500 text-white py-12 md:py-16">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M0 20 L40 20 M20 0 L20 40" stroke="white" stroke-width="2"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#pattern)"/>
+        </svg>
+    </div>
 
-    <!-- Filter Section -->
-    <section class="py-8 bg-white shadow-md">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-center items-center">
-                <!-- Categories -->
-                <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center md:justify-start">
-                    <a href="{% url 'stories' %}" 
-                        class="px-4 py-2 rounded-full text-sm font-medium transition duration-300 
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">लोकप्रिय कहानियाँ</h1>
+            <p class="text-xl text-amber-100">पाठकों द्वारा सबसे अधिक पसंद की गई कहानियाँ। इन कहानियों में आपको प्रेरणा,
+                ज्ञान और मनोरंजन का अनूठा संगम मिलेगा।</p>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="py-8 bg-white shadow-md">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-center items-center">
+            <!-- Categories -->
+            <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center md:justify-start">
+                <a href="{% url 'dashboard:stories' %}"
+                   class="px-4 py-2 rounded-full text-sm font-medium transition duration-300
                             {% if not selected_category %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-800 hover:bg-orange-200{% endif %}">
-                        सभी
-                    </a>
-                    {% for cat in categories %}
-                        <a href="{% url 'stories' %}?category={{ cat }}" class="px-4 py-2 rounded-full text-sm font-medium transition duration-300 {% if selected_category == cat %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-800 hover:bg-orange-200{% endif %}">
-                            {{ cat }}
-                        </a>
-                    {% endfor %}
-                </div>
+                    सभी
+                </a>
+                {% for cat in categories %}
+                <a href="{% url 'dashboard:stories' %}?category={{ cat }}"
+                   class="px-4 py-2 rounded-full text-sm font-medium transition duration-300 {% if selected_category == cat %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-800 hover:bg-orange-200{% endif %}">
+                    {{ cat }}
+                </a>
+                {% endfor %}
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Main Content -->
-    <main class="py-12">
-        <div class="container mx-auto px-4">
-            <div class="mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">सभी लोकप्रिय कहानियाँ</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {% for story in stories %}
-                        <div class="bg-white rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
-                            <div class="relative">
-                                <img src="{{ story.image_url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
-                                <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">{{ story.category }}</div>
-                            </div>
-                            <div class="p-6">
-                                <h3 class="text-xl font-bold text-gray-800 mb-3">{{ story.title }}</h3>
-                                <p class="text-gray-600 mb-4">{{ story.content|truncatewords:30 }}</p>
-                                <a href="{% url 'story_detail' slug=story.slug %}" class="mt-4 block bg-orange-100 hover:bg-orange-200 text-orange-600 text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
-                                    पूरी कहानी पढ़ें
-                                </a>
-                            </div>
+<!-- Main Content -->
+<main class="py-12">
+    <div class="container mx-auto px-4">
+        <div class="mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">सभी लोकप्रिय कहानियाँ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for story in stories %}
+                <div class="bg-white rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <div class="relative">
+                        <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                        <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+                            {{ story.category }}
                         </div>
-                    {% endfor %}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">{{ story.title }}</h3>
+                        <p class="text-gray-600 mb-4">{{ story.content|truncatewords:30 }}</p>
+                        <a href="{% url 'blog:story_detail' slug=story.slug %}"
+                           class="mt-4 block bg-orange-100 hover:bg-orange-200 text-orange-600 text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
+                            पूरी कहानी पढ़ें
+                        </a>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <!-- Newsletter Section -->
-    <section class="bg-orange-100 py-12 md:py-16">
-        <div class="container mx-auto px-4">
-            <div class="max-w-3xl mx-auto text-center">
-                <h2 class="text-2xl md:text-3xl font-bold text-orange-800 mb-4">नई कहानियों के लिए सदस्यता लें</h2>
-                <p class="text-orange-700 mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में प्राप्त करें। हमारी न्यूज़लेटर से जुड़ें और कभी भी कोई कहानी न चूकें।</p>
-                
-                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                    <input type="email" placeholder="आपका ईमेल पता" class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                        सदस्यता लें
-                    </button>
-                </form>
-            </div>
+<!-- Pagination -->
+{% if stories.has_other_pages %}
+<div class="mt-8 flex justify-center space-x-2">
+    {% if stories.has_previous %}
+    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.previous_page_number }}"
+       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+        पिछला
+    </a>
+    {% endif %}
+
+    {% for num in stories.paginator.page_range %}
+    {% if stories.number == num %}
+    <span class="px-4 py-2 bg-orange-800 text-white rounded">{{ num }}</span>
+    {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
+    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
+       class="px-4 py-2 bg-orange-100 text-orange-800 rounded hover:bg-orange-200">{{ num }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% if stories.has_next %}
+    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.next_page_number }}"
+       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+        अगला
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+
+<!-- Newsletter Section -->
+<section class="bg-orange-100 py-12 md:py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-orange-800 mb-4">नई कहानियों के लिए सदस्यता लें</h2>
+            <p class="text-orange-700 mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में प्राप्त करें। हमारी न्यूज़लेटर
+                से जुड़ें और कभी भी कोई कहानी न चूकें।</p>
+
+            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input type="email" placeholder="आपका ईमेल पता"
+                       class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <button type="submit"
+                        class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                    सदस्यता लें
+                </button>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 
 {% endblock %}

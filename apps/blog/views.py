@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from django.views import View
-from .models import Post
+from .models import Post, Category
 from django.http import Http404
 
 
@@ -15,17 +16,23 @@ class HomeView(View):
 class StoriesView(View):
     def get(self, request):
         category = request.GET.get('category')
-        if category:
-            stories = Story.objects.filter(category=category)
-        else:
-            stories = Story.objects.all()
+        page_number = request.GET.get('page', 1)
 
-        categories = [c[0] for c in Story.CATEGORY_CHOICES]
+        if category:
+            stories = Post.objects.filter(category__name=category)
+        else:
+            stories = Post.objects.all()
+
+        paginator = Paginator(stories, 3)  # Show 6 stories per page
+        page_obj = paginator.get_page(page_number)
+
+        categories = Category.objects.all()
         return render(request, 'stories.html', {
-            'stories': stories,
+            'stories': page_obj,
             'categories': categories,
             'selected_category': category
         })
+
 
 class StoryDetailView(View):
     def get(self, request, slug):
