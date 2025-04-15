@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'taggit',
     'django_ckeditor_5',
     'star_ratings',
+    'hitcount',
+
 
 ]
 

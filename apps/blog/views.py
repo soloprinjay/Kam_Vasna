@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from hitcount.utils import get_hitcount_model
+from hitcount.views import HitCountMixin
 from django.views import View
 from .models import Post, Category
 from django.http import Http404
@@ -41,5 +43,8 @@ class StoryDetailView(View):
             story = Post.objects.get(slug=slug)
         except Post.DoesNotExist:
             raise Http404("Story not found")
+
+        hit_count = get_hitcount_model().objects.get_for_object(story)
+        HitCountMixin.hit_count(request, hit_count)
 
         return render(request, 'story_detail.html', {'story': story})

@@ -3,6 +3,8 @@ from taggit.managers import TaggableManager
 from django_ckeditor_5.fields import CKEditor5Field
 from star_ratings.models import Rating
 from django.utils.text import slugify
+from hitcount.models import HitCount
+from django.contrib.contenttypes.fields import GenericRelation
 import re
 
 
@@ -25,6 +27,8 @@ class Post(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     ratings = models.ForeignKey(Rating, on_delete=models.CASCADE, null=True, blank=True)
     tags = TaggableManager()
+    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
+
 
     def save(self, *args, **kwargs):
         if not self.slug:
