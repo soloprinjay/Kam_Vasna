@@ -75,6 +75,8 @@
     </div>
 </main>
 
+<div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
 <!-- Pagination -->
 {% if stories.has_other_pages %}
 <div class="mt-8 flex justify-center space-x-2">
@@ -104,6 +106,25 @@
 {% endif %}
 
 
+<!-- Jump to Page -->
+<div class="mt-6 flex justify-center">
+    <form method="get" class="flex items-center space-x-2">
+        {% if selected_category %}
+        <input type="hidden" name="category" value="{{ selected_category }}">
+        {% endif %}
+        <label for="jump_page" class="text-sm font-medium text-gray-700">पृष्ठ:</label>
+        <input type="number" min="1" max="{{ stories.paginator.num_pages }}" name="page" id="jump_page"
+               class="w-20 px-3 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+               placeholder="1">
+        <button type="submit"
+                class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition duration-300">
+            जाएं
+        </button>
+    </form>
+</div>
+
+</div>
+
 <!-- Newsletter Section -->
 <section class="bg-orange-100 py-12 md:py-16">
     <div class="container mx-auto px-4">
@@ -123,5 +144,4 @@
         </div>
     </div>
 </section>
-
 {% endblock %}
