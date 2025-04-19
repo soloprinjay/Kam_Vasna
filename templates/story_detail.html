@@ -106,7 +106,9 @@
                 {% for recent_post in recent_posts %}
                 <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div class="relative">
-                        <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" class="w-full h-56 object-cover">
+                        {% if recent_post.image %}
+                            <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" class="w-full h-56 object-cover">
+                        {% endif %}
                         <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
                             {{ recent_post.category }}
                         </div>
