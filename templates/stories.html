@@ -75,55 +75,60 @@
     </div>
 </main>
 
-<div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<main>
+    <div class="container mx-auto px-4">
+        <div class="mb-12">
+            <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-<!-- Pagination -->
-{% if stories.has_other_pages %}
-<div class="mt-8 flex justify-center space-x-2">
-    {% if stories.has_previous %}
-    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.previous_page_number }}"
-       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
-        पिछला
-    </a>
-    {% endif %}
+                <!-- Jump to Page -->
+                <div class="mt-6 flex justify-center">
+                    <form method="get" class="flex items-center space-x-2">
+                        {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category }}">
+                        {% endif %}
+                        <label for="jump_page" class="text-sm font-medium text-gray-700">पृष्ठ:</label>
+                        <input type="number" min="1" max="{{ stories.paginator.num_pages }}" name="page" id="jump_page"
+                               class="w-20 px-3 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+                               placeholder="1">
+                        <button type="submit"
+                                class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition duration-300">
+                            जाएं
+                        </button>
+                    </form>
+                </div>
 
-    {% for num in stories.paginator.page_range %}
-    {% if stories.number == num %}
-    <span class="px-4 py-2 bg-orange-800 text-white rounded">{{ num }}</span>
-    {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
-    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
-       class="px-4 py-2 bg-orange-100 text-orange-800 rounded hover:bg-orange-200">{{ num }}</a>
-    {% endif %}
-    {% endfor %}
+                <!-- Pagination -->
+                {% if stories.has_other_pages %}
+                <div class="mt-8 flex justify-center space-x-2">
+                    {% if stories.has_previous %}
+                    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.previous_page_number }}"
+                       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                        पिछला
+                    </a>
+                    {% endif %}
 
-    {% if stories.has_next %}
-    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.next_page_number }}"
-       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
-        अगला
-    </a>
-    {% endif %}
-</div>
-{% endif %}
+                    {% for num in stories.paginator.page_range %}
+                    {% if stories.number == num %}
+                    <span class="px-4 py-2 bg-orange-800 text-white rounded">{{ num }}</span>
+                    {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
+                    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
+                       class="px-4 py-2 bg-orange-100 text-orange-800 rounded hover:bg-orange-200">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
 
+                    {% if stories.has_next %}
+                    <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.next_page_number }}"
+                       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                        अगला
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
 
-<!-- Jump to Page -->
-<div class="mt-6 flex justify-center">
-    <form method="get" class="flex items-center space-x-2">
-        {% if selected_category %}
-        <input type="hidden" name="category" value="{{ selected_category }}">
-        {% endif %}
-        <label for="jump_page" class="text-sm font-medium text-gray-700">पृष्ठ:</label>
-        <input type="number" min="1" max="{{ stories.paginator.num_pages }}" name="page" id="jump_page"
-               class="w-20 px-3 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
-               placeholder="1">
-        <button type="submit"
-                class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition duration-300">
-            जाएं
-        </button>
-    </form>
-</div>
-
-</div>
+            </div>
+        </div>
+    </div>
+</main>
 
 <!-- Newsletter Section -->
 <section class="bg-orange-100 py-12 md:py-16">
