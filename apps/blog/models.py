@@ -27,6 +27,7 @@ class Post(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     ratings = models.ForeignKey(Rating, on_delete=models.CASCADE, null=True, blank=True)
     tags = TaggableManager()
+    likes = models.IntegerField(default=0)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
 
 
