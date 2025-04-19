@@ -174,3 +174,16 @@ cython_debug/
 .pypirc
 **/migrations/*.py
 !**/migrations/__init__.py
+# Ignore media/uploads/images
+media/
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# IDE and OS files
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
