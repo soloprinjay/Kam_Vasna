@@ -15,25 +15,40 @@
         }
     </style>
 </head>
-<body class="bg-amber-50">
+<body class="bg-amber-50 dark:bg-dark-bg transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-orange-600 text-white shadow-md">
+    <header class="bg-orange-600 dark:bg-dark-card text-white shadow-md fixed w-full z-50 transition-colors duration-300">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo/Site Name -->
                 <div class="text-2xl font-bold">हिंदी कहानियाँ</div>
                 
                 <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-8">
+                <nav class="hidden md:flex items-center space-x-8">
                     <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
                     <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
+                    
+                    <!-- Dark Mode Toggle Button -->
+                    <button id="dark-mode-toggle" class="p-2 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent focus:outline-none">
+                        <i class="fas fa-moon text-xl theme-icon-moon"></i>
+                        <i class="fas fa-sun text-xl theme-icon-sun hidden"></i>
+                    </button>
                 </nav>
                 
-                <!-- Mobile Toggle Button -->
-                <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
+                <!-- Mobile Toggle Buttons -->
+                <div class="md:hidden flex items-center space-x-4">
+                    <!-- Dark Mode Toggle Button for Mobile -->
+                    <button id="dark-mode-toggle-mobile" class="p-2 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent focus:outline-none">
+                        <i class="fas fa-moon text-xl theme-icon-moon"></i>
+                        <i class="fas fa-sun text-xl theme-icon-sun hidden"></i>
+                    </button>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
             </div>
             
             <!-- Mobile Navigation -->
@@ -47,23 +62,6 @@
         </div>
     </header>
 
-<!--    <script>-->
-<!--        // Toggle mobile menu-->
-<!--        const mobileMenuButton = document.getElementById('mobile-menu-button');-->
-<!--        const mobileMenu = document.getElementById('mobile-menu');-->
-<!--        -->
-<!--        mobileMenuButton.addEventListener('click', () => {-->
-<!--            mobileMenu.classList.toggle('hidden');-->
-<!--            // Change icon based on menu state-->
-<!--            const icon = mobileMenuButton.querySelector('i');-->
-<!--            if (mobileMenu.classList.contains('hidden')) {-->
-<!--                icon.classList.remove('fa-times');-->
-<!--                icon.classList.add('fa-bars');-->
-<!--            } else {-->
-<!--                icon.classList.remove('fa-bars');-->
-<!--                icon.classList.add('fa-times');-->
-<!--            }-->
-<!--        });-->
-<!--    </script>-->
+    <script src="{% static 'js/darkMode.js' %}"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<section class="relative bg-gradient-to-r from-orange-600 to-amber-500 text-white py-12 md:py-16">
+<section class="relative bg-gradient-to-r from-orange-600 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-24 md:py-32 transition-colors duration-300">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -25,19 +25,28 @@
 </section>
 
 <!-- Filter Section -->
-<section class="py-8 bg-white shadow-md">
+<section class="py-8 bg-white dark:bg-dark-card shadow-md transition-colors duration-300">
     <div class="container mx-auto px-4">
         <div class="flex justify-center items-center">
             <!-- Categories -->
             <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center md:justify-start">
                 <a href="{% url 'dashboard:stories' %}"
                    class="px-4 py-2 rounded-full text-sm font-medium transition duration-300
-                            {% if not selected_category %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-800 hover:bg-orange-200{% endif %}">
+                          {% if not selected_category %}
+                              bg-orange-600 dark:bg-dark-accent text-white
+                          {% else %}
+                              bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text hover:bg-orange-200 dark:hover:bg-dark-accent
+                          {% endif %}">
                     सभी
                 </a>
                 {% for cat in categories %}
                 <a href="{% url 'dashboard:stories' %}?category={{ cat }}"
-                   class="px-4 py-2 rounded-full text-sm font-medium transition duration-300 {% if selected_category == cat %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-800 hover:bg-orange-200{% endif %}">
+                   class="px-4 py-2 rounded-full text-sm font-medium transition duration-300
+                          {% if selected_category == cat|stringformat:'s' %}
+                              bg-orange-600 dark:bg-dark-accent text-white
+                          {% else %}
+                              bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text hover:bg-orange-200 dark:hover:bg-dark-accent
+                          {% endif %}">
                     {{ cat }}
                 </a>
                 {% endfor %}
@@ -50,23 +59,23 @@
 <main class="py-12">
     <div class="container mx-auto px-4">
         <div class="mb-12">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">सभी लोकप्रिय कहानियाँ</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-dark-text mb-8">सभी लोकप्रिय कहानियाँ</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for story in stories %}
-                <div class="bg-white rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div class="relative">
                         {% if story.image %}
                             <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
                         {% endif %}
-                        <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+                        <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
                             {{ story.category }}
                         </div>
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-3">{{ story.title }}</h3>
-                        <p class="text-gray-600 mb-4">{{ story.content|truncatewords:30 }}</p>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
+                        <p class="text-brown-dark dark:text-dark-text-secondary mb-4">{{ story.description|safe|truncatewords:30 }}</p>
                         <a href="{% url 'blog:story_detail' slug=story.slug %}"
-                           class="mt-4 block bg-orange-100 hover:bg-orange-200 text-orange-600 text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
+                           class="mt-4 block bg-orange-100 dark:bg-dark-bg hover:bg-orange-200 dark:hover:bg-dark-accent text-orange-600 dark:text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
                             पूरी कहानी पढ़ें
                         </a>
                     </div>
@@ -88,12 +97,12 @@
                         {% if selected_category %}
                         <input type="hidden" name="category" value="{{ selected_category }}">
                         {% endif %}
-                        <label for="jump_page" class="text-sm font-medium text-gray-700">पृष्ठ:</label>
+                        <label for="jump_page" class="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">पृष्ठ:</label>
                         <input type="number" min="1" max="{{ stories.paginator.num_pages }}" name="page" id="jump_page"
-                               class="w-20 px-3 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+                               class="w-20 px-3 py-2 border border-orange-300 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
                                placeholder="1">
                         <button type="submit"
-                                class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition duration-300">
+                                class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
                             जाएं
                         </button>
                     </form>
@@ -104,23 +113,23 @@
                 <div class="mt-8 flex justify-center space-x-2">
                     {% if stories.has_previous %}
                     <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.previous_page_number }}"
-                       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                       class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
                         पिछला
                     </a>
                     {% endif %}
 
                     {% for num in stories.paginator.page_range %}
                     {% if stories.number == num %}
-                    <span class="px-4 py-2 bg-orange-800 text-white rounded">{{ num }}</span>
+                    <span class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded">{{ num }}</span>
                     {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
                     <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
-                       class="px-4 py-2 bg-orange-100 text-orange-800 rounded hover:bg-orange-200">{{ num }}</a>
+                       class="px-4 py-2 bg-orange-100 dark:bg-dark-bg text-orange-600 dark:text-dark-accent rounded hover:bg-orange-200 dark:hover:bg-dark-accent-hover transition duration-300">{{ num }}</a>
                     {% endif %}
                     {% endfor %}
 
                     {% if stories.has_next %}
                     <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ stories.next_page_number }}"
-                       class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                       class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
                         अगला
                     </a>
                     {% endif %}
@@ -133,18 +142,18 @@
 </main>
 
 <!-- Newsletter Section -->
-<section class="bg-orange-100 py-12 md:py-16">
+<section class="bg-orange-100 dark:bg-dark-bg py-12 md:py-16 transition-colors duration-300">
     <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-2xl md:text-3xl font-bold text-orange-800 mb-4">नई कहानियों के लिए सदस्यता लें</h2>
-            <p class="text-orange-700 mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में प्राप्त करें। हमारी न्यूज़लेटर
+            <h2 class="text-2xl md:text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">नई कहानियों के लिए सदस्यता लें</h2>
+            <p class="text-orange-700 dark:text-dark-text-secondary mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में प्राप्त करें। हमारी न्यूज़लेटर
                 से जुड़ें और कभी भी कोई कहानी न चूकें।</p>
 
             <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                 <input type="email" placeholder="आपका ईमेल पता"
-                       class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                       class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-dark-card dark:text-dark-text dark:border-dark-border">
                 <button type="submit"
-                        class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                        class="bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300">
                     सदस्यता लें
                 </button>
             </form>

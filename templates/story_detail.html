@@ -9,60 +9,32 @@
     }
 </style>
 
-
-<!--<section class="max-w-4xl mx-auto px-4 py-12">-->
-<!--    <div class="bg-white shadow-lg rounded-2xl overflow-hidden">-->
-<!--        <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-100 object-cover">-->
-<!--        <div class="p-8">-->
-<!--            <span class="inline-block bg-orange-600 text-white text-sm font-semibold px-3 py-1 rounded-full mb-4">{{ story.category }}</span>-->
-<!--            <h1 class="text-3xl font-bold text-orange-800 mb-4">{{ story.title }}</h1>-->
-<!--            <p class="text-gray-700 leading-relaxed text-lg">{{ story.description|safe }}</p>-->
-<!--            <span>{{ story.hit_count_generic.first.hits }}<strong>Views</strong></span>-->
-<!--            <button-->
-<!--                    class="like-btn flex items-center space-x-2 text-gray-600 hover:text-red-600 transition duration-300"-->
-<!--                    data-post-id="{{ story.id }}"-->
-<!--            >-->
-<!--                <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20">-->
-<!--                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.343l-6.828-6.829a4 4 0 010-5.656z"/>-->
-<!--                </svg>-->
-<!--                <span class="like-count">{{ story.likes }}</span>-->
-<!--            </button>-->
-
-<!--            <div class="mt-8">-->
-<!--                <a href="/"-->
-<!--                   class="inline-block bg-orange-600 text-white py-2 px-6 rounded-full hover:bg-orange-700 transition">होम-->
-<!--                    पेज पर जाएं</a>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</section>-->
-
 <section class="max-w-4xl mx-auto px-4 py-12">
-    <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+    <div class="bg-white dark:bg-dark-card shadow-lg rounded-2xl overflow-hidden transition-colors duration-300">
         <!-- Story Image -->
         <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-96 object-cover">
 
         <!-- Content -->
         <div class="p-8">
             <!-- Category Badge -->
-            <span class="inline-block bg-orange-600 text-white text-sm font-semibold px-3 py-1 rounded-full mb-4">
+            <span class="inline-block bg-orange-600 dark:bg-dark-accent text-white text-sm font-semibold px-3 py-1 rounded-full mb-4">
                 {{ story.category }}
             </span>
 
             <!-- Title -->
-            <h1 class="text-3xl font-bold text-orange-800 mb-4">
+            <h1 class="text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">
                 {{ story.title }}
             </h1>
 
             <!-- Description -->
-            <p class="text-gray-700 leading-relaxed text-lg mb-6">
+            <p class="text-gray-700 dark:text-dark-text-secondary leading-relaxed text-lg mb-6">
                 {{ story.description|safe }}
             </p>
 
             <!-- Views and Likes -->
-            <div class="flex items-center justify-between border-t pt-4">
+            <div class="flex items-center justify-between border-t dark:border-dark-border pt-4">
                 <!-- Views -->
-                <div class="flex items-center space-x-2 text-gray-600">
+                <div class="flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
                          viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -75,7 +47,7 @@
 
                 <!-- Likes -->
                 <button
-                    class="like-btn flex items-center space-x-2 text-gray-600 hover:text-red-600 transition duration-300"
+                    class="like-btn flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-red-600 transition duration-300"
                     data-post-id="{{ story.id }}"
                 >
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20">
@@ -88,7 +60,7 @@
             <!-- Go to Home Button -->
             <div class="mt-8">
                 <a href="/"
-                   class="inline-block bg-orange-600 text-white py-2 px-6 rounded-full hover:bg-orange-700 transition">
+                   class="inline-block bg-orange-600 dark:bg-dark-accent text-white py-2 px-6 rounded-full hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
                     होम पेज पर जाएं
                 </a>
             </div>
@@ -100,25 +72,25 @@
 <main class="py-12">
     <div class="container mx-auto px-4">
         <div class="mb-12">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">Recent Post</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-dark-text mb-8">Recent Post</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for recent_post in recent_posts %}
-                <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div class="relative">
                         {% if recent_post.image %}
                             <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" class="w-full h-56 object-cover">
                         {% endif %}
-                        <div class="absolute top-4 right-4 bg-orange-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+                        <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
                             {{ recent_post.category }}
                         </div>
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-3">{{ recent_post.title }}</h3>
-                        <p class="text-gray-600 mb-4">{{ recent_post.description|safe|truncatewords:30 }}</p>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ recent_post.title }}</h3>
+                        <p class="text-gray-600 dark:text-dark-text-secondary mb-4">{{ recent_post.description|safe|truncatewords:30 }}</p>
                         <div class="flex items-center justify-end mt-4">
                             <a href="{% url 'blog:story_detail' slug=recent_post.slug %}"
-                               class="text-orange-600 hover:text-orange-800 font-semibold transition duration-300">
+                               class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
                                 पूरी कहानी पढ़ें &rarr;
                             </a>
                         </div>

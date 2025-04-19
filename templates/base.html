@@ -1,37 +1,68 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>हिंदी कहानियाँ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            'bg': '#121212',
+                            'card': '#1e1e1e',
+                            'text': '#e0e0e0',
+                            'text-secondary': '#a0a0a0',
+                            'border': '#333333',
+                            'accent': '#ff7043',
+                            'accent-hover': '#ff5722',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Prevent Flash Of Incorrect Theme (FOIT) */
+        html.light {
+            background-color: #fff7ed;
+        }
+        
+        html.dark {
+            background-color: #121212;
         }
     </style>
 </head>
 
-<body>
+<body class="bg-amber-50 dark:bg-dark-bg transition-colors duration-300">
 <!-- Navbar start -->
 {% include 'header.html' %}
 <!-- Navbar end -->
 
-{% block content %}
-{% endblock %}
+<main class="py-8">
+    {% block content %}
+    {% endblock %}
+</main>
 
 <!-- Footer start -->
-
 {% include 'footer.html' %}
-
-
 <!-- Footer end -->
 
-
-</body>
+<!-- JavaScript for Dark Mode -->
+<script src="{% static 'js/darkMode.js' %}"></script>
 
 <!-- JavaScript for Mobile Menu Toggle -->
 <script>
@@ -53,5 +84,5 @@
     });
 </script>
 
-
+</body>
 </html>
