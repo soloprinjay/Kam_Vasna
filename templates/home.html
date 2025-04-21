@@ -2,20 +2,21 @@
 
 {% block content %}
 
- <!-- Hero Section -->
- <section class="relative bg-gradient-to-r from-orange-500 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-20 md:py-24 transition-colors duration-300">
+<!-- Hero Section -->
+<section
+        class="relative bg-gradient-to-r from-orange-500 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-20 md:py-24 transition-colors duration-300">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
                 <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M0 20 L40 20 M20 0 L20 40" stroke="white" stroke-width="2" />
+                    <path d="M0 20 L40 20 M20 0 L20 40" stroke="white" stroke-width="2"/>
                 </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#pattern)" />
+            <rect width="100%" height="100%" fill="url(#pattern)"/>
         </svg>
     </div>
-    
+
     <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
         <div class="flex flex-col md:flex-row items-center">
             <!-- Text Content -->
@@ -24,28 +25,32 @@
                     सेक्स कहानियों की अनोखी दुनिया में आपका स्वागत है
                 </h1>
                 <p class="text-lg md:text-xl mb-8 text-amber-100">
-                    हमारे संग्रह से सबसे रोचक और उत्तेजक हिंदी कहानियों का आनंद लें। संवेदनाओं को जगाने वाली, कल्पनाओं को उड़ान देने वाली कहानियों का खजाना आपका इंतज़ार कर रहा है।
+                    हमारे संग्रह से सबसे रोचक और उत्तेजक हिंदी कहानियों का आनंद लें। संवेदनाओं को जगाने वाली, कल्पनाओं
+                    को उड़ान देने वाली कहानियों का खजाना आपका इंतज़ार कर रहा है।
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="{% url 'dashboard:stories' %}" class="bg-white dark:bg-dark-card text-orange-600 dark:text-dark-accent hover:bg-orange-100 dark:hover:bg-dark-bg font-bold py-3 px-8 rounded-full transition duration-300 text-center">
+                    <a href="{% url 'dashboard:stories' %}"
+                       class="bg-white dark:bg-dark-card text-orange-600 dark:text-dark-accent hover:bg-orange-100 dark:hover:bg-dark-bg font-bold py-3 px-8 rounded-full transition duration-300 text-center">
                         पढ़ना शुरू करें
                     </a>
-                    <a href="#" class="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 dark:hover:text-dark-accent font-bold py-3 px-8 rounded-full transition duration-300 text-center">
+                    <a href="#"
+                       class="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 dark:hover:text-dark-accent font-bold py-3 px-8 rounded-full transition duration-300 text-center">
                         श्रेणियाँ देखें
                     </a>
                 </div>
             </div>
-            
+
             <!-- Hero Image -->
             <div class="md:w-1/2">
                 <div class="relative">
                     <!-- Decorative Elements -->
                     <div class="absolute -top-6 -left-6 w-20 h-20 bg-amber-300 dark:bg-dark-accent rounded-full opacity-50"></div>
                     <div class="absolute -bottom-6 -right-6 w-16 h-16 bg-orange-700 dark:bg-dark-accent-hover rounded-full opacity-50"></div>
-                    
+
                     <!-- Main Image with Frame -->
                     <div class="relative z-10 bg-white dark:bg-dark-card p-3 rounded-lg shadow-xl transform rotate-1">
-                        <img src="https://i.ytimg.com/vi/xp-tQv1J4fE/maxresdefault.jpg" alt="हिंदी कहानियाँ" class="rounded w-full h-auto">
+                        <img src="https://i.ytimg.com/vi/xp-tQv1J4fE/maxresdefault.jpg" alt="हिंदी कहानियाँ"
+                             class="rounded w-full h-auto">
                     </div>
                 </div>
             </div>
@@ -56,38 +61,44 @@
 
 <!-- Featured Stories Section -->
 <section class="bg-amber-100 dark:bg-dark-bg py-12 md:py-16 transition-colors duration-300">
-<div class="container mx-auto px-4">
-    <!-- Section Header -->
-    <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-orange-800 dark:text-dark-text mb-4">सबसे हॉट कहानियाँ</h2>
-        <p class="text-orange-700 dark:text-dark-text-secondary max-w-3xl mx-auto">हमारे पाठकों द्वारा सबसे अधिक पसंद की गई रोमांटिक और संवेदनशील कहानियाँ। इन कहानियों में आपको आकर्षण, कल्पना और भावनाओं का अनूठा संगम मिलेगा।</p>
-    </div>
-
-    <!-- Stories Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for story in stories %}
-        <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
-            <div class="relative">
-                {% if story.image %}
-                    <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
-                {% endif %}
-                <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
-                    {{ story.category }}
-                </div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
-                <p class="text-gray-600 dark:text-dark-text-secondary mb-4">{{ story.description|safe|truncatewords:30 }}</p>
-                <div class="flex items-center justify-end mt-4">
-                    <a href="{% url 'blog:story_detail' slug=story.slug %}" class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
-                        पूरी कहानी पढ़ें &rarr;
-                    </a>
-                </div>
-            </div>
+    <div class="container mx-auto px-4">
+        <!-- Section Header -->
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-orange-800 dark:text-dark-text mb-4">सबसे हॉट कहानियाँ</h2>
+            <p class="text-orange-700 dark:text-dark-text-secondary max-w-3xl mx-auto">हमारे पाठकों द्वारा सबसे अधिक
+                पसंद की गई रोमांटिक और संवेदनशील कहानियाँ। इन कहानियों में आपको आकर्षण, कल्पना और भावनाओं का अनूठा संगम
+                मिलेगा।</p>
         </div>
-        {% endfor %}
+
+        <!-- Stories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for story in stories %}
+            <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="relative">
+                    {% if story.image %}
+                    <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                    {% endif %}
+                    <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
+                        {{ story.category }}
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
+                    <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
+                        {{ story.description|safe|truncatewords:30 }}
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <a href="{% url 'blog:story_detail' slug=story.slug %}"
+                           class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
+                            पूरी कहानी पढ़ें &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
 </section>
 
 {% endblock %}

@@ -27,9 +27,9 @@
             </h1>
 
             <!-- Description -->
-            <p class="text-gray-700 dark:text-dark-text-secondary leading-relaxed text-lg mb-6">
+            <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
                 {{ story.description|safe }}
-            </p>
+            </div>
 
             <!-- Views and Likes -->
             <div class="flex items-center justify-between border-t dark:border-dark-border pt-4">
@@ -47,8 +47,8 @@
 
                 <!-- Likes -->
                 <button
-                    class="like-btn flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-red-600 transition duration-300"
-                    data-post-id="{{ story.id }}"
+                        class="like-btn flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-red-600 transition duration-300"
+                        data-post-id="{{ story.id }}"
                 >
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20">
                         <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.343l-6.828-6.829a4 4 0 010-5.656z"/>
@@ -79,7 +79,8 @@
                 <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div class="relative">
                         {% if recent_post.image %}
-                            <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" class="w-full h-56 object-cover">
+                        <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}"
+                             class="w-full h-56 object-cover">
                         {% endif %}
                         <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
                             {{ recent_post.category }}
@@ -87,7 +88,9 @@
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ recent_post.title }}</h3>
-                        <p class="text-gray-600 dark:text-dark-text-secondary mb-4">{{ recent_post.description|safe|truncatewords:30 }}</p>
+                        <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
+                            {{ recent_post.description|safe|truncatewords:30 }}
+                        </div>
                         <div class="flex items-center justify-end mt-4">
                             <a href="{% url 'blog:story_detail' slug=recent_post.slug %}"
                                class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
