@@ -2,7 +2,8 @@
 
 {% block content %}
 
-<section class="relative bg-gradient-to-r from-orange-600 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-24 md:py-32 transition-colors duration-300">
+<section
+        class="relative bg-gradient-to-r from-orange-600 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-24 md:py-32 transition-colors duration-300">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -65,7 +66,7 @@
                 <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                     <div class="relative">
                         {% if story.image %}
-                            <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                        <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
                         {% endif %}
                         <div class="absolute top-4 right-4 bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
                             {{ story.category }}
@@ -73,7 +74,9 @@
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
-                        <p class="text-brown-dark dark:text-dark-text-secondary mb-4">{{ story.description|safe|truncatewords:30 }}</p>
+                        <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
+                            {{ story.description|safe|truncatewords:30 }}
+                        </div>
                         <a href="{% url 'blog:story_detail' slug=story.slug %}"
                            class="mt-4 block bg-orange-100 dark:bg-dark-bg hover:bg-orange-200 dark:hover:bg-dark-accent text-orange-600 dark:text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
                             पूरी कहानी पढ़ें
@@ -123,7 +126,8 @@
                     <span class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded">{{ num }}</span>
                     {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
                     <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
-                       class="px-4 py-2 bg-orange-100 dark:bg-dark-bg text-orange-600 dark:text-dark-accent rounded hover:bg-orange-200 dark:hover:bg-dark-accent-hover transition duration-300">{{ num }}</a>
+                       class="px-4 py-2 bg-orange-100 dark:bg-dark-bg text-orange-600 dark:text-dark-accent rounded hover:bg-orange-200 dark:hover:bg-dark-accent-hover transition duration-300">{{
+                        num }}</a>
                     {% endif %}
                     {% endfor %}
 
@@ -145,8 +149,10 @@
 <section class="bg-orange-100 dark:bg-dark-bg py-12 md:py-16 transition-colors duration-300">
     <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-2xl md:text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">नई कहानियों के लिए सदस्यता लें</h2>
-            <p class="text-orange-700 dark:text-dark-text-secondary mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में प्राप्त करें। हमारी न्यूज़लेटर
+            <h2 class="text-2xl md:text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">नई कहानियों के लिए
+                सदस्यता लें</h2>
+            <p class="text-orange-700 dark:text-dark-text-secondary mb-8">हर सप्ताह नई कहानियाँ सीधे आपके इनबॉक्स में
+                प्राप्त करें। हमारी न्यूज़लेटर
                 से जुड़ें और कभी भी कोई कहानी न चूकें।</p>
 
             <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
