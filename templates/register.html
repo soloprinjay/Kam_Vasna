@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% load socialaccount %}
+
 {% block content %}
-<section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-amber-50 dark:bg-dark-bg transition-colors duration-300">
+<section
+        class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-amber-50 dark:bg-dark-bg transition-colors duration-300">
     <div class="max-w-md w-full space-y-8 bg-white dark:bg-dark-card p-8 rounded-2xl shadow-xl transition-colors duration-300">
         <!-- Header -->
         <div class="text-center">
@@ -12,12 +15,15 @@
 
         <!-- Social Login Buttons -->
         <div class="space-y-4">
-            <button class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-dark-bg transition duration-300">
+            <a href="{% provider_login_url 'google'%}"
+               class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-dark-bg transition duration-300">
                 <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
                 Google से साइन अप करें
-            </button>
+            </a>
+
             <button class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-dark-bg transition duration-300">
-                <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook logo">
+                <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475647/facebook-color.svg"
+                     alt="Facebook logo">
                 Facebook से साइन अप करें
             </button>
         </div>
@@ -37,43 +43,55 @@
             <div class="rounded-md shadow-sm space-y-4">
                 <div>
                     <label for="name" class="sr-only">पूरा नाम</label>
-                    <input id="name" name="name" type="text" required 
+                    <input id="name" name="name" type="text" required
                            class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-border placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent focus:border-transparent transition duration-300"
                            placeholder="पूरा नाम">
                 </div>
                 <div>
                     <label for="email" class="sr-only">ईमेल पता</label>
-                    <input id="email" name="email" type="email" required 
+                    <input id="email" name="email" type="email" required
                            class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-border placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent focus:border-transparent transition duration-300"
                            placeholder="ईमेल पता">
                 </div>
                 <div class="relative">
                     <label for="password" class="sr-only">पासवर्ड</label>
-                    <input id="password" name="password" type="password" required 
+                    <input id="password" name="password" type="password" required
                            class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-border placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent focus:border-transparent transition duration-300 pr-10"
                            placeholder="पासवर्ड">
-                    <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-hide" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <button type="button" onclick="togglePassword('password')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-hide" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
-                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-show hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-show hidden" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                         </svg>
                     </button>
                 </div>
                 <div class="relative">
                     <label for="confirm-password" class="sr-only">पासवर्ड की पुष्टि करें</label>
-                    <input id="confirm-password" name="confirm-password" type="password" required 
+                    <input id="confirm-password" name="confirm-password" type="password" required
                            class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-border placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent focus:border-transparent transition duration-300 pr-10"
                            placeholder="पासवर्ड की पुष्टि करें">
-                    <button type="button" onclick="togglePassword('confirm-password')" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-hide" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <button type="button" onclick="togglePassword('confirm-password')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-hide" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
-                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-show hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-400 password-show hidden" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                         </svg>
                     </button>
                 </div>
@@ -83,12 +101,14 @@
                 <input id="terms" name="terms" type="checkbox" required
                        class="h-4 w-4 text-orange-600 dark:text-dark-accent focus:ring-orange-500 dark:focus:ring-dark-accent border-gray-300 dark:border-dark-border rounded transition duration-300">
                 <label for="terms" class="ml-2 block text-sm text-gray-900 dark:text-dark-text">
-                    मैं <a href="#" class="text-orange-600 dark:text-dark-accent hover:text-orange-500 dark:hover:text-dark-accent-hover">नियम और शर्तें</a> से सहमत हूं
+                    मैं <a href="#"
+                           class="text-orange-600 dark:text-dark-accent hover:text-orange-500 dark:hover:text-dark-accent-hover">नियम
+                    और शर्तें</a> से सहमत हूं
                 </label>
             </div>
 
             <div>
-                <button type="submit" 
+                <button type="submit"
                         class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
                     खाता बनाएं
                 </button>
@@ -99,7 +119,8 @@
         <div class="text-center mt-4">
             <p class="text-sm text-gray-600 dark:text-dark-text-secondary">
                 पहले से खाता है?
-                <a href="{% url 'dashboard:login' %}" class="font-medium text-orange-600 dark:text-dark-accent hover:text-orange-500 dark:hover:text-dark-accent-hover transition duration-300">
+                <a href="{% url 'users:login' %}"
+                   class="font-medium text-orange-600 dark:text-dark-accent hover:text-orange-500 dark:hover:text-dark-accent-hover transition duration-300">
                     लॉगिन करें
                 </a>
             </p>
@@ -108,21 +129,21 @@
 </section>
 
 <script>
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const parent = input.parentElement;
-    const showIcon = parent.querySelector('.password-show');
-    const hideIcon = parent.querySelector('.password-hide');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        showIcon.classList.remove('hidden');
-        hideIcon.classList.add('hidden');
-    } else {
-        input.type = 'password';
-        showIcon.classList.add('hidden');
-        hideIcon.classList.remove('hidden');
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const parent = input.parentElement;
+        const showIcon = parent.querySelector('.password-show');
+        const hideIcon = parent.querySelector('.password-hide');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            showIcon.classList.remove('hidden');
+            hideIcon.classList.add('hidden');
+        } else {
+            input.type = 'password';
+            showIcon.classList.add('hidden');
+            hideIcon.classList.remove('hidden');
+        }
     }
-}
 </script>
 {% endblock %} 
