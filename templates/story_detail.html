@@ -7,6 +7,21 @@
     .like-btn.liked svg {
         color: #dc2626; /* Tailwind red-600 */
     }
+    .star-rating {
+        display: inline-flex;
+        gap: 0.25rem;
+    }
+    .star-rating .star {
+        cursor: pointer;
+        color: #d1d5db; /* gray-300 */
+        transition: color 0.2s;
+    }
+    .star-rating .star.active {
+        color: #f59e0b; /* amber-500 */
+    }
+    .star-rating .star:hover {
+        color: #f59e0b; /* amber-500 */
+    }
 </style>
 
 <section class="max-w-4xl mx-auto px-4 py-12">
@@ -25,6 +40,21 @@
             <h1 class="text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">
                 {{ story.title }}
             </h1>
+
+            <!-- Story Rating -->
+            <div class="mb-4">
+                <div class="star-rating" data-rating="{{ story.rating|default:0 }}">
+                    {% for i in "12345"|make_list %}
+                    <svg class="w-6 h-6 star {% if forloop.counter <= story.rating|default:0 %}active{% endif %}" 
+                         fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {% endfor %}
+                </div>
+                <span class="text-sm text-gray-600 dark:text-dark-text-secondary ml-2">
+                    ({{ story.rating_count|default:0 }} रेटिंग)
+                </span>
+            </div>
 
             <!-- Description -->
             <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
@@ -114,12 +144,23 @@
             <!-- Comments Header -->
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-orange-800 dark:text-dark-text">टिप्पणियाँ</h2>
-                <span class="text-gray-600 dark:text-dark-text-secondary">5 टिप्पणियाँ</span>
+                <span class="text-gray-600 dark:text-dark-text-secondary">1 टिप्पणियाँ</span>
             </div>
 
             <!-- Comment Form -->
             <form class="mb-8 bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
                 <div class="mb-4">
+                    <!-- Rating Input -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-dark-text-secondary mb-2">कहानी की रेटिंग दें</label>
+                        <div class="star-rating" id="comment-rating">
+                            {% for i in "12345"|make_list %}
+                            <svg class="w-6 h-6 star" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <textarea 
                         class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
                         rows="4"
@@ -154,131 +195,19 @@
                                 <h3 class="font-semibold text-orange-800 dark:text-dark-text">राहुल</h3>
                                 <span class="text-sm text-gray-500 dark:text-dark-text-secondary">2 घंटे पहले</span>
                             </div>
+                            
+                            <!-- Comment Rating -->
+                            <div class="mb-2">
+                                <div class="star-rating" data-rating="4">
+                                    {% for i in "12345"|make_list %}
+                                    <svg class="w-6 h-6 star" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
                             <p class="text-gray-600 dark:text-dark-text-secondary">बहुत ही सुंदर कहानी है। मैंने इसे पूरा पढ़ा और मुझे बहुत पसंद आया। आपकी लेखन शैली बहुत अच्छी है।</p>
-                            
-                            <!-- Comment Actions -->
-                            <div class="flex items-center space-x-4 mt-4">
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-reply mr-1"></i> जवाब दें
-                                </button>
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment 2 -->
-                <div class="bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
-                    <div class="flex items-start space-x-4">
-                        <!-- User Avatar -->
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
-                                P
-                            </div>
-                        </div>
-                        
-                        <!-- Comment Content -->
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">प्रिया</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">5 घंटे पहले</span>
-                            </div>
-                            <p class="text-gray-600 dark:text-dark-text-secondary">कहानी का अंत बहुत ही रोमांचक था। मैं अगली कहानी का इंतज़ार कर रही हूँ।</p>
-                            
-                            <!-- Comment Actions -->
-                            <div class="flex items-center space-x-4 mt-4">
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-reply mr-1"></i> जवाब दें
-                                </button>
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment 3 -->
-                <div class="bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
-                    <div class="flex items-start space-x-4">
-                        <!-- User Avatar -->
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
-                                A
-                            </div>
-                        </div>
-                        
-                        <!-- Comment Content -->
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">अमित</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">1 दिन पहले</span>
-                            </div>
-                            <p class="text-gray-600 dark:text-dark-text-secondary">मैंने आपकी सभी कहानियाँ पढ़ी हैं और हर एक कहानी बेहतरीन है। आपकी कल्पनाशीलता और लेखन शैली दोनों ही प्रशंसनीय हैं।</p>
-                            
-                            <!-- Comment Actions -->
-                            <div class="flex items-center space-x-4 mt-4">
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-reply mr-1"></i> जवाब दें
-                                </button>
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment 3 -->
-                <div class="bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
-                    <div class="flex items-start space-x-4">
-                        <!-- User Avatar -->
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
-                                A
-                            </div>
-                        </div>
-                        
-                        <!-- Comment Content -->
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">अमित</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">1 दिन पहले</span>
-                            </div>
-                            <p class="text-gray-600 dark:text-dark-text-secondary">मैंने आपकी सभी कहानियाँ पढ़ी हैं और हर एक कहानी बेहतरीन है। आपकी कल्पनाशीलता और लेखन शैली दोनों ही प्रशंसनीय हैं।</p>
-                            
-                            <!-- Comment Actions -->
-                            <div class="flex items-center space-x-4 mt-4">
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-reply mr-1"></i> जवाब दें
-                                </button>
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
-                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comment 3 -->
-                <div class="bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
-                    <div class="flex items-start space-x-4">
-                        <!-- User Avatar -->
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
-                                A
-                            </div>
-                        </div>
-                        
-                        <!-- Comment Content -->
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">अमित</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">1 दिन पहले</span>
-                            </div>
-                            <p class="text-gray-600 dark:text-dark-text-secondary">मैंने आपकी सभी कहानियाँ पढ़ी हैं और हर एक कहानी बेहतरीन है। आपकी कल्पनाशीलता और लेखन शैली दोनों ही प्रशंसनीय हैं।</p>
                             
                             <!-- Comment Actions -->
                             <div class="flex items-center space-x-4 mt-4">
@@ -298,6 +227,40 @@
 </section>
 
 <script src="{% static 'js/post_like.js' %}"></script>
+<script>
+    // Star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const starRatings = document.querySelectorAll('.star-rating');
+        
+        starRatings.forEach(rating => {
+            const stars = rating.querySelectorAll('.star');
+            let selectedRating = 0;
+            
+            stars.forEach((star, index) => {
+                // Click event
+                star.addEventListener('click', () => {
+                    selectedRating = index + 1;
+                    stars.forEach((s, i) => {
+                        s.classList.toggle('active', i < selectedRating);
+                    });
+                });
+
+                // Hover events
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        s.classList.toggle('active', i <= index);
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach((s, i) => {
+                        s.classList.toggle('active', i < selectedRating);
+                    });
+                });
+            });
+        });
+    });
+</script>
 
 {% endblock %}
 

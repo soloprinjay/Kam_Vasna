@@ -126,8 +126,7 @@
                     <span class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded">{{ num }}</span>
                     {% elif num > stories.number|add:-3 and num < stories.number|add:3 %}
                     <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
-                       class="px-4 py-2 bg-orange-100 dark:bg-dark-bg text-orange-600 dark:text-dark-accent rounded hover:bg-orange-200 dark:hover:bg-dark-accent-hover transition duration-300">{{
-                        num }}</a>
+                       class="px-4 py-2 bg-orange-100 border border-orange-300 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded hover:bg-orange-200 dark:hover:bg-dark-accent-hover transition duration-300">{{ num }}</a>
                     {% endif %}
                     {% endfor %}
 
