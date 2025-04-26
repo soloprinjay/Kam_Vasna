@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
+from django.contrib.auth import logout
+
 # Create your views here.
 
 class RegisterView(View):
@@ -20,3 +22,8 @@ class ForgotPasswordView(View):
 class ResetPasswordView(View):
     def get(self, request):
         return render(request, 'reset_password.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
