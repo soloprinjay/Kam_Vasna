@@ -39,7 +39,7 @@
         </div>
 
         <!-- Login Form -->
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form id="login-form" class="mt-8 space-y-6">
             {% csrf_token %}
             <div class="rounded-md shadow-sm space-y-4">
                 <div>
@@ -109,22 +109,7 @@
     </div>
 </section>
 
-<script>
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const parent = input.parentElement;
-        const showIcon = parent.querySelector('.password-show');
-        const hideIcon = parent.querySelector('.password-hide');
+<script src="{% static 'js/login.js' %}"></script>
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            showIcon.classList.remove('hidden');
-            hideIcon.classList.add('hidden');
-        } else {
-            input.type = 'password';
-            showIcon.classList.add('hidden');
-            hideIcon.classList.remove('hidden');
-        }
-    }
-</script>
+
 {% endblock %} 

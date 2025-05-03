@@ -38,7 +38,7 @@
         </div>
 
         <!-- Registration Form -->
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form class="mt-8 space-y-6" id="signup-form">
             {% csrf_token %}
             <div class="rounded-md shadow-sm space-y-4">
                 <div>
@@ -119,7 +119,7 @@
         <div class="text-center mt-4">
             <p class="text-sm text-gray-600 dark:text-dark-text-secondary">
                 पहले से खाता है?
-                <a href="{% url 'users:login' %}"
+                <a href="{% url 'users:login-user' %}"
                    class="font-medium text-orange-600 dark:text-dark-accent hover:text-orange-500 dark:hover:text-dark-accent-hover transition duration-300">
                     लॉगिन करें
                 </a>
@@ -128,22 +128,7 @@
     </div>
 </section>
 
-<script>
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const parent = input.parentElement;
-        const showIcon = parent.querySelector('.password-show');
-        const hideIcon = parent.querySelector('.password-hide');
+<script src="{% static 'js/register.js' %}"></script>
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            showIcon.classList.remove('hidden');
-            hideIcon.classList.add('hidden');
-        } else {
-            input.type = 'password';
-            showIcon.classList.add('hidden');
-            hideIcon.classList.remove('hidden');
-        }
-    }
-</script>
-{% endblock %} 
+
+{% endblock %}

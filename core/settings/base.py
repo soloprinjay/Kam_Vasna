@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'hitcount',
     'allauth',
     'allauth.account',
-
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
@@ -74,12 +73,23 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"
+EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'users:change_password'
 
 LOGOUT_REDIRECT_URL = '/'
+
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days (default, for Remember Me)
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # if remember me is NOT checked
 
 
 ROOT_URLCONF = 'core.urls'
@@ -190,6 +200,7 @@ customColorPalette = [
     },
     {
         'color': 'hsl(207, 90%, 54%)',
+
         'label': 'Blue'
     },
 ]
