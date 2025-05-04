@@ -28,3 +28,5 @@ swapper==1.4.0
 typing_extensions==4.13.0
 upgrade-requirements==1.7.0
 urllib3==2.4.0
+channels==4.0.0
+channels-redis==4.2.0
