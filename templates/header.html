@@ -28,7 +28,9 @@
                     <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
                     <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
-                    <a href="{% url 'users:logout-user' %}" class="hover:text-orange-200 transition duration-300">logout</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:logout-user' %}" class="hover:text-orange-200 transition duration-300">logout</a>
+                    {% endif %}
                     <!-- Dark Mode Toggle Button -->
                     <button id="dark-mode-toggle" class="p-2 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent focus:outline-none">
                         <i class="fas fa-moon text-xl theme-icon-moon"></i>

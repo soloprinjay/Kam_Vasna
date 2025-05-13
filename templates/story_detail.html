@@ -4,21 +4,29 @@
 {% block content %}
 
 <style>
-    .like-btn.liked svg {
-        color: #dc2626; /* Tailwind red-600 */
+    .like-btn.liked {
+        color: #dc2626 !important; /* Tailwind red-600 */
     }
+
+    .like-btn.liked i {
+        color: #dc2626 !important;
+    }
+
     .star-rating {
         display: inline-flex;
         gap: 0.25rem;
     }
+
     .star-rating .star {
         cursor: pointer;
         color: #d1d5db; /* gray-300 */
         transition: color 0.2s;
     }
+
     .star-rating .star.active {
         color: #f59e0b; /* amber-500 */
     }
+
     .star-rating .star:hover {
         color: #f59e0b; /* amber-500 */
     }
@@ -45,7 +53,7 @@
             <div class="mb-4">
                 <div class="star-rating" data-rating="{{ story.rating|default:0 }}">
                     {% for i in "12345"|make_list %}
-                    <svg class="w-6 h-6 star {% if forloop.counter <= story.rating|default:0 %}active{% endif %}" 
+                    <svg class="w-6 h-6 star {% if forloop.counter <= story.rating|default:0 %}active{% endif %}"
                          fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
@@ -144,15 +152,19 @@
             <!-- Comments Header -->
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-orange-800 dark:text-dark-text">टिप्पणियाँ</h2>
-                <span class="text-gray-600 dark:text-dark-text-secondary">1 टिप्पणियाँ</span>
+                <span class="text-gray-600 dark:text-dark-text-secondary" id="comment-count">{{ comments.count }} टिप्पणियाँ</span>
             </div>
 
             <!-- Comment Form -->
-            <form class="mb-8 bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
+            <form id="comment-form" class="mb-8 bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
+                {% csrf_token %}
+                <input type="hidden" name="post_id" value="{{ story.id }}">
+                <input type="hidden" name="parent_id" id="parent_id" value="">
                 <div class="mb-4">
                     <!-- Rating Input -->
                     <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-dark-text-secondary mb-2">कहानी की रेटिंग दें</label>
+                        <label class="block text-gray-700 dark:text-dark-text-secondary mb-2">कहानी की रेटिंग
+                            दें</label>
                         <div class="star-rating" id="comment-rating">
                             {% for i in "12345"|make_list %}
                             <svg class="w-6 h-6 star" fill="currentColor" viewBox="0 0 20 20">
@@ -161,16 +173,17 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <textarea 
-                        class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
-                        rows="4"
-                        placeholder="अपनी टिप्पणी लिखें..."
+                    <textarea
+                            id="comment-body"
+                            class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
+                            rows="4"
+                            placeholder="अपनी टिप्पणी लिखें..."
                     ></textarea>
                 </div>
                 <div class="flex justify-end">
-                    <button 
-                        type="submit"
-                        class="bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105"
+                    <button
+                            type="submit"
+                            class="bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105"
                     >
                         टिप्पणी पोस्ट करें
                     </button>
@@ -178,85 +191,297 @@
             </form>
 
             <!-- Comments List -->
-            <div class="space-y-6 max-h-[500px] overflow-y-auto pr-4">
-                <!-- Comment 1 -->
-                <div class="bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
+            <div id="comments-container" class="space-y-6 max-h-[500px] overflow-y-auto pr-4">
+                {% for comment in comments %}
+                <div class="comment-item bg-orange-50 dark:bg-dark-bg p-6 rounded-xl"
+                     data-comment-id="{{ comment.id }}">
                     <div class="flex items-start space-x-4">
                         <!-- User Avatar -->
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
-                                R
+                                {{ comment.user.get_full_name|first|default:comment.user.email|first }}
                             </div>
                         </div>
-                        
+
                         <!-- Comment Content -->
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">राहुल</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">2 घंटे पहले</span>
+                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">{{
+                                    comment.user.get_full_name|default:comment.user.email }}</h3>
+                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">{{ comment.timestamp|timesince }} पहले</span>
                             </div>
-                            
-                            <!-- Comment Rating -->
-                            <div class="mb-2">
-                                <div class="star-rating" data-rating="4">
-                                    {% for i in "12345"|make_list %}
-                                    <svg class="w-6 h-6 star" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                    </svg>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            
-                            <p class="text-gray-600 dark:text-dark-text-secondary">बहुत ही सुंदर कहानी है। मैंने इसे पूरा पढ़ा और मुझे बहुत पसंद आया। आपकी लेखन शैली बहुत अच्छी है।</p>
-                            
+
+                            <p class="text-gray-600 dark:text-dark-text-secondary">{{ comment.body }}</p>
+
                             <!-- Comment Actions -->
                             <div class="flex items-center space-x-4 mt-4">
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
+                                <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                        data-comment-id="{{ comment.id }}">
                                     <i class="fas fa-reply mr-1"></i> जवाब दें
                                 </button>
-                                <button class="text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
+                                <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                        data-comment-id="{{ comment.id }}">
                                     <i class="fas fa-thumbs-up mr-1"></i> पसंद
                                 </button>
+                            </div>
+
+                            <!-- Replies Container -->
+                            <div class="replies-container mt-4 space-y-4 pl-8">
+                                {% for reply in comment.replies.all %}
+                                <div class="reply-item bg-white dark:bg-dark-card p-4 rounded-lg"
+                                     data-comment-id="{{ reply.id }}">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white text-sm">
+                                            {{ reply.user.get_full_name|first|default:reply.user.email|first }}
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <h4 class="font-semibold text-orange-800 dark:text-dark-text text-sm">{{
+                                                    reply.user.get_full_name|default:reply.user.email }}</h4>
+                                                <span class="text-xs text-gray-500 dark:text-dark-text-secondary">{{ reply.timestamp|timesince }} पहले</span>
+                                            </div>
+                                            <p class="text-gray-600 dark:text-dark-text-secondary text-sm">{{ reply.body
+                                                }}</p>
+                                            <div class="flex items-center space-x-3 mt-2">
+                                                <button class="reply-btn text-xs text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                                        data-comment-id="{{ reply.id }}">
+                                                    <i class="fas fa-reply mr-1"></i> जवाब दें
+                                                </button>
+                                                <button class="like-btn text-xs text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                                        data-comment-id="{{ reply.id }}">
+                                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </section>
 
 <script src="{% static 'js/post_like.js' %}"></script>
+<!--<script src="{% static 'js/comment.js' %}"></script>-->
+
 <script>
-    // Star rating functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const starRatings = document.querySelectorAll('.star-rating');
-        
-        starRatings.forEach(rating => {
-            const stars = rating.querySelectorAll('.star');
-            let selectedRating = 0;
+    document.addEventListener('DOMContentLoaded', function () {
+        const commentForm = document.getElementById('comment-form');
+        const commentBody = document.getElementById('comment-body');
+        const parentIdInput = document.getElementById('parent_id');
+        const commentsContainer = document.getElementById('comments-container');
+        const commentCount = document.getElementById('comment-count');
+
+        // WebSocket connection
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const ws_path = `${ws_scheme}://${window.location.host}/ws/comments/{{ story.id }}/`;
+        const socket = new WebSocket(ws_path);
+
+        // Function to add a comment to the DOM
+        function addCommentToDOM(comment, container, isReply = false) {
+            const commentHTML = `
+            <div class="comment-item ${isReply ? 'bg-white dark:bg-dark-card' : 'bg-orange-50 dark:bg-dark-bg'} p-6 rounded-xl" data-comment-id="${comment.id}">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
+                            ${comment.user.name[0]}
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-orange-800 dark:text-dark-text">${comment.user.name}</h3>
+                            <span class="text-sm text-gray-500 dark:text-dark-text-secondary">${comment.timestamp}</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-dark-text-secondary">${comment.body}</p>
+                        <div class="flex items-center space-x-4 mt-4">
+                            <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300" data-comment-id="${comment.id}">
+                                <i class="fas fa-reply mr-1"></i> जवाब दें
+                            </button>
+                            <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300 ${comment.liked ? 'liked' : ''}" data-comment-id="${comment.id}">
+                                <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">${comment.likes}</span>
+                            </button>
+                        </div>
+                        <div class="replies-container mt-4 space-y-4 pl-8"></div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            // Insert the comment into the container
+            container.insertAdjacentHTML('beforeend', commentHTML);
+
+            // Add event listeners to the new comment's buttons
+            const newComment = container.lastElementChild;
+            const replyButton = newComment.querySelector('.reply-btn');
+            const likeButton = newComment.querySelector('.like-btn');
+
+            replyButton.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                parentIdInput.value = commentId;
+                commentBody.focus();
+                commentBody.placeholder = "Reply to comment...";
+            });
+
+            likeButton.addEventListener('click', function() {
+                const userId = '{{ request.user.id }}';
+                if (!userId || userId === 'None') {
+                    window.location = "{% url 'users:login-user' %}";
+                    return;
+                }
+
+                const commentId = this.dataset.commentId;
+                socket.send(JSON.stringify({
+                    action: 'like_comment',
+                    user_id: userId,
+                    comment_id: commentId
+                }));
+            });
+
+            // If this comment has replies, recursively add them
+            if (comment.replies && comment.replies.length > 0) {
+                const repliesContainer = newComment.querySelector('.replies-container');
+                comment.replies.forEach(reply => {
+                    addCommentToDOM(reply, repliesContainer, true);
+                });
+            }
+        }
+
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
             
-            stars.forEach((star, index) => {
-                // Click event
-                star.addEventListener('click', () => {
-                    selectedRating = index + 1;
-                    stars.forEach((s, i) => {
-                        s.classList.toggle('active', i < selectedRating);
-                    });
+            // Handle existing comments
+            if (data.type === 'existing_comments') {
+                // Clear existing comments
+                commentsContainer.innerHTML = '';
+                
+                // Add each comment and its nested replies
+                data.comments.forEach(comment => {
+                    addCommentToDOM(comment, commentsContainer);
                 });
+                updateCommentCount();
+                return;
+            }
+            
+            // Handle new comments
+            if (data.error) {
+                console.error('Error:', data.error);
+                alert('Error: ' + data.error);
+                return;
+            }
 
-                // Hover events
-                star.addEventListener('mouseenter', () => {
-                    stars.forEach((s, i) => {
-                        s.classList.toggle('active', i <= index);
-                    });
-                });
+            // Handle like updates
+            if (data.comment_id) {
+                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
+                if (commentElement) {
+                    const likeButton = commentElement.querySelector('.like-btn');
+                    const likeCount = commentElement.querySelector('.like-count');
+                    
+                    if (data.liked) {
+                        likeButton.classList.add('liked');
+                    } else {
+                        likeButton.classList.remove('liked');
+                    }
+                    
+                    likeCount.textContent = data.likes;
+                }
+                return;
+            }
 
-                star.addEventListener('mouseleave', () => {
-                    stars.forEach((s, i) => {
-                        s.classList.toggle('active', i < selectedRating);
+            // If it's a reply, find the parent comment and add it there
+            if (data.parent_id) {
+                const parentComment = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
+                if (parentComment) {
+                    const repliesContainer = parentComment.querySelector('.replies-container');
+                    if (repliesContainer) {
+                        addCommentToDOM(data, repliesContainer, true);
+                    }
+                }
+            } else {
+                // Add new top-level comment
+                addCommentToDOM(data, commentsContainer);
+            }
+            updateCommentCount();
+        };
+
+        // Handle comment form submission
+        commentForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get and validate user ID
+            const userId = '{{ request.user.id }}';
+            if (!userId || userId === 'None') {
+                window.location = "{% url 'users:login-user' %}";
+                return;
+            }
+
+            // Validate comment body
+            const commentText = commentBody.value.trim();
+            if (!commentText) {
+                alert('Please enter a comment');
+                return;
+            }
+
+            // Prepare form data with proper type conversion
+            const formData = {
+                action: 'new_comment',
+                body: commentText,
+                user_id: parseInt(userId, 10),
+                parent_id: parentIdInput.value ? parseInt(parentIdInput.value, 10) : null
+            };
+
+            // Send the comment
+            socket.send(JSON.stringify(formData));
+            
+            // Clear form
+            commentBody.value = '';
+            parentIdInput.value = '';
+            commentBody.placeholder = "अपनी टिप्पणी लिखें...";
+        });
+
+        // Handle reply buttons
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const commentId = this.dataset.commentId;
+                parentIdInput.value = commentId;
+                commentBody.focus();
+                commentBody.placeholder = "Reply to comment...";
+            });
+        });
+
+        // Function to update comment count
+        function updateCommentCount() {
+            const count = document.querySelectorAll('.comment-item').length;
+            commentCount.textContent = `${count} टिप्पणियाँ`;
+        }
+
+        // Load existing comments when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all existing comments from the page
+            const existingComments = document.querySelectorAll('.comment-item');
+            existingComments.forEach(comment => {
+                const commentId = comment.dataset.commentId;
+                const repliesContainer = comment.querySelector('.replies-container');
+                if (repliesContainer) {
+                    const replies = repliesContainer.querySelectorAll('.reply-item');
+                    replies.forEach(reply => {
+                        const replyId = reply.dataset.commentId;
+                        // Add event listeners to reply buttons
+                        const replyButtons = reply.querySelectorAll('.reply-btn');
+                        replyButtons.forEach(button => {
+                            button.addEventListener('click', function() {
+                                const commentId = this.dataset.commentId;
+                                parentIdInput.value = commentId;
+                                commentBody.focus();
+                                commentBody.placeholder = "Reply to comment...";
+                            });
+                        });
                     });
-                });
+                }
             });
         });
     });

@@ -18,14 +18,15 @@ class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('created_on', 'last_modified')
     fieldsets = (
         ('Basic Information', {'fields': ('title', 'slug', 'category', 'description', 'image')}),
-        ('Metadata', {'fields': ('created_on', 'last_modified', 'ratings', 'tags')}),
+        ('Metadata', {'fields': ('created_on', 'likes', 'last_modified', 'ratings', 'tags')}),
     )
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'post', 'email', 'created')
-    list_filter = ('created', 'updated')
-    search_fields = ('name', 'email', 'body')
-    autocomplete_fields = ['post']
-    readonly_fields = ('created', 'updated')
+    list_display = ('id', 'post', 'user', 'timestamp', 'parent')
+    list_filter = ('timestamp', 'post', 'user')
+    search_fields = ('body', 'user__email', 'post__title')
+    readonly_fields = ('timestamp',)
+    raw_id_fields = ('user', 'post', 'parent')
+

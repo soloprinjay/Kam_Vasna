@@ -9,6 +9,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     username = None
     password = models.CharField(_("password"), max_length=200)
+    has_set_password = models.BooleanField(default=False)
     terms_confirmed = models.BooleanField(default=False)
     full_name = models.CharField(_("full name"), max_length=255)
 

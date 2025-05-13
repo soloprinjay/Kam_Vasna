@@ -3,7 +3,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
@@ -93,26 +95,38 @@ class ChangePasswordView(View):
         return render(request, 'change_password.html')
 
     def post(self, request):
-        user = request.user
-        old_password = request.POST.get('old_password')
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            user = request.user
+            old_password = data.get('current_password')
+            new_password = data.get('new_password')
+            confirm_password = data.get('confirm_password')
 
-        if not user.check_password(old_password):
-            messages.error(request, 'पुराना पासवर्ड गलत है।')
+            if not user.check_password(old_password):
+                return JsonResponse({'message': 'पुराना पासवर्ड गलत है।'}, status=400)
 
-        elif new_password != confirm_password:
-            messages.error(request, 'नया पासवर्ड मेल नहीं खा रहा है।')
-        else:
+            if new_password != confirm_password:
+                return JsonResponse({'message': 'नया पासवर्ड मेल नहीं खा रहा है।'}, status=400)
+
             user.set_password(new_password)
+            user.has_set_password = True
             user.save()
-            update_session_auth_hash(request, user)  # to avoid logout
-            messages.success(request, 'पासवर्ड सफलतापूर्वक बदल दिया गया है।')
-            return redirect('change-password')
-        return render(request, 'change_password.html')
+            update_session_auth_hash(request, user)
+
+            return JsonResponse({'message': 'पासवर्ड सफलतापूर्वक बदल दिया गया है।'})
+
+        return JsonResponse({'message': 'Invalid request.'}, status=400)
 
 
 
 def logout_view(request):
     logout(request)
     return redirect('users:login-user')
+
+
+@login_required
+def post_login_redirect(request):
+    user = request.user
+    if not user.has_set_password:
+        return redirect('users:change_password')
+    return redirect('/')  # or wherever you want users to go normally

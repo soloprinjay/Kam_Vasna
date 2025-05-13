@@ -26,3 +26,39 @@ function getCSRFToken() {
     return csrfToken || '{{ csrf_token }}';
 }
 
+
+
+
+// Star rating functionality
+
+document.addEventListener('DOMContentLoaded', function () {
+    const starRatings = document.querySelectorAll('.star-rating');
+
+    starRatings.forEach(rating => {
+        const stars = rating.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        stars.forEach((star, index) => {
+            // Click event
+            star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i < selectedRating);
+                });
+            });
+
+            // Hover events
+            star.addEventListener('mouseenter', () => {
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i <= index);
+                });
+            });
+
+            star.addEventListener('mouseleave', () => {
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i < selectedRating);
+                });
+            });
+        });
+    });
+});
