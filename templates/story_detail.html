@@ -3,6 +3,9 @@
 
 {% block content %}
 
+<!-- Add rating.css -->
+<link rel="stylesheet" href="{% static 'css/rating.css' %}">
+
 <style>
     .like-btn.liked {
         color: #dc2626 !important; /* Tailwind red-600 */
@@ -51,12 +54,13 @@
 
             <!-- Story Rating -->
             <div class="mb-4">
-                <div class="star-rating" data-rating="{{ story.rating|default:0 }}">
+                <div class="star-rating" id="story-rating" data-rating="{{ story.rating|default:0 }}">
                     {% for i in "12345"|make_list %}
-                    <svg class="w-6 h-6 star {% if forloop.counter <= story.rating|default:0 %}active{% endif %}"
-                         fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
+                    <span class="star" data-rating="{{ forloop.counter }}">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </span>
                     {% endfor %}
                 </div>
                 <span class="text-sm text-gray-600 dark:text-dark-text-secondary ml-2">
@@ -161,18 +165,6 @@
                 <input type="hidden" name="post_id" value="{{ story.id }}">
                 <input type="hidden" name="parent_id" id="parent_id" value="">
                 <div class="mb-4">
-                    <!-- Rating Input -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700 dark:text-dark-text-secondary mb-2">कहानी की रेटिंग
-                            दें</label>
-                        <div class="star-rating" id="comment-rating">
-                            {% for i in "12345"|make_list %}
-                            <svg class="w-6 h-6 star" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                            {% endfor %}
-                        </div>
-                    </div>
                     <textarea
                             id="comment-body"
                             class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
@@ -268,6 +260,8 @@
 
 <script src="{% static 'js/post_like.js' %}"></script>
 <!--<script src="{% static 'js/comment.js' %}"></script>-->
+<!-- Add rating.js -->
+<script src="{% static 'js/rating.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -276,11 +270,207 @@
         const parentIdInput = document.getElementById('parent_id');
         const commentsContainer = document.getElementById('comments-container');
         const commentCount = document.getElementById('comment-count');
+        const storyRating = document.getElementById('story-rating');
+        const storyStars = storyRating.querySelectorAll('.star');
+        let currentStoryRating = parseInt(storyRating.dataset.rating) || 0;
+
+        // Initialize comment rating
+        const commentRating = document.getElementById('story-rating');
+        const commentStars = commentRating.querySelectorAll('.star');
+        let currentCommentRating = 0;
 
         // WebSocket connection
         const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
         const ws_path = `${ws_scheme}://${window.location.host}/ws/comments/{{ story.id }}/`;
         const socket = new WebSocket(ws_path);
+
+        // WebSocket connection status logging
+        socket.onopen = function(e) {
+            console.log("WebSocket connection established");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = function(e) {
+            console.log("WebSocket connection closed");
+        };
+
+        // Function to update star display
+        function updateStars(stars, rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Function to send rating to server
+        function sendRating(rating) {
+            const userId = '{{ request.user.id }}';
+            if (!userId || userId === 'None') {
+                window.location = "{% url 'users:login-user' %}";
+                return;
+            }
+
+            const ratingData = {
+                action: 'rate_post',
+                user_id: userId,
+                rating: rating
+            };
+            socket.send(JSON.stringify(ratingData));
+        }
+
+        // Initialize story stars with current rating
+        updateStars(storyStars, currentStoryRating);
+
+        // Add event listeners to story stars
+        storyStars.forEach((star, index) => {
+            const rating = index + 1;
+
+            // Mouseover event - only preview rating
+            star.addEventListener('mouseover', function(e) {
+                e.preventDefault();
+                updateStars(storyStars, rating);
+            });
+
+            // Mouseout event - restore to current rating
+            star.addEventListener('mouseout', function(e) {
+                e.preventDefault();
+                updateStars(storyStars, currentStoryRating);
+            });
+
+            // Click event - save rating
+            star.addEventListener('click', function(e) {
+                e.preventDefault();
+                sendRating(rating);
+            });
+        });
+
+        // Add event listeners to comment stars
+        commentStars.forEach((star, index) => {
+            const rating = index + 1;
+
+            // Mouseover event - only preview rating
+            star.addEventListener('mouseover', function(e) {
+                e.preventDefault();
+                updateStars(commentStars, rating);
+            });
+
+            // Mouseout event - restore to current rating
+            star.addEventListener('mouseout', function(e) {
+                e.preventDefault();
+                updateStars(commentStars, currentCommentRating);
+            });
+
+            // Click event - update comment rating
+            star.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentCommentRating = rating;
+                updateStars(commentStars, currentCommentRating);
+            });
+        });
+
+        // WebSocket message handler
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            console.log("Received WebSocket message:", data);
+            
+            // Handle existing comments
+            if (data.type === 'existing_comments') {
+                commentsContainer.innerHTML = '';
+                data.comments.forEach(comment => {
+                    addCommentToDOM(comment, commentsContainer);
+                });
+                updateCommentCount();
+                return;
+            }
+
+            // Handle current rating
+            if (data.type === 'current_rating') {
+                console.log("Received current rating:", data.rating);
+                updateStarRating(data.rating);
+                return;
+            }
+
+            // Handle rating updates
+            if (data.type === 'rating_update') {
+                console.log("Received rating update:", data.rating);
+                updateStarRating(data.rating);
+                return;
+            }
+            
+            // Handle new comments
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+
+            // Handle like updates
+            if (data.comment_id) {
+                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
+                if (commentElement) {
+                    const likeButton = commentElement.querySelector('.like-btn');
+                    const likeCount = commentElement.querySelector('.like-count');
+                    
+                    if (data.liked) {
+                        likeButton.classList.add('liked');
+                    } else {
+                        likeButton.classList.remove('liked');
+                    }
+                    
+                    likeCount.textContent = data.likes;
+                }
+                return;
+            }
+
+            // If it's a reply, find the parent comment and add it there
+            if (data.parent_id) {
+                const parentComment = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
+                if (parentComment) {
+                    const repliesContainer = parentComment.querySelector('.replies-container');
+                    if (repliesContainer) {
+                        addCommentToDOM(data, repliesContainer, true);
+                    }
+                }
+            } else {
+                // Add new top-level comment
+                addCommentToDOM(data, commentsContainer);
+            }
+            updateCommentCount();
+        };
+
+        // Function to update star rating display
+        function updateStarRating(ratingData) {
+            console.log("Updating star rating with data:", ratingData);
+            if (ratingData.error) {
+                console.error("Error updating rating:", ratingData.error);
+                return;
+            }
+
+            // Update current rating
+            currentStoryRating = Math.round(ratingData.average);
+            storyRating.dataset.rating = currentStoryRating;
+            console.log("Updated current rating to:", currentStoryRating);
+
+            // Update star display
+            updateStars(storyStars, currentStoryRating);
+
+            // Update rating count display
+            const ratingCount = document.querySelector('.star-rating + span');
+            if (ratingCount) {
+                ratingCount.textContent = `(${ratingData.count} रेटिंग)`;
+                console.log("Updated rating count to:", ratingData.count);
+            }
+
+            // Update user's rating if available
+            if (ratingData.user_rating) {
+                updateStars(storyStars, ratingData.user_rating);
+            }
+        }
 
         // Function to add a comment to the DOM
         function addCommentToDOM(comment, container, isReply = false) {
@@ -351,113 +541,36 @@
             }
         }
 
-        socket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            
-            // Handle existing comments
-            if (data.type === 'existing_comments') {
-                // Clear existing comments
-                commentsContainer.innerHTML = '';
-                
-                // Add each comment and its nested replies
-                data.comments.forEach(comment => {
-                    addCommentToDOM(comment, commentsContainer);
-                });
-                updateCommentCount();
-                return;
-            }
-            
-            // Handle new comments
-            if (data.error) {
-                console.error('Error:', data.error);
-                alert('Error: ' + data.error);
-                return;
-            }
+        // Function to update comment count
+        function updateCommentCount() {
+            const count = document.querySelectorAll('.comment-item').length;
+            commentCount.textContent = `${count} टिप्पणियाँ`;
+        }
 
-            // Handle like updates
-            if (data.comment_id) {
-                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
-                if (commentElement) {
-                    const likeButton = commentElement.querySelector('.like-btn');
-                    const likeCount = commentElement.querySelector('.like-count');
-                    
-                    if (data.liked) {
-                        likeButton.classList.add('liked');
-                    } else {
-                        likeButton.classList.remove('liked');
-                    }
-                    
-                    likeCount.textContent = data.likes;
-                }
-                return;
-            }
-
-            // If it's a reply, find the parent comment and add it there
-            if (data.parent_id) {
-                const parentComment = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
-                if (parentComment) {
-                    const repliesContainer = parentComment.querySelector('.replies-container');
-                    if (repliesContainer) {
-                        addCommentToDOM(data, repliesContainer, true);
-                    }
-                }
-            } else {
-                // Add new top-level comment
-                addCommentToDOM(data, commentsContainer);
-            }
-            updateCommentCount();
-        };
-
-        // Handle comment form submission
-        commentForm.addEventListener('submit', function (e) {
+        // Add comment form submission handler
+        commentForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Get and validate user ID
+            
             const userId = '{{ request.user.id }}';
             if (!userId || userId === 'None') {
                 window.location = "{% url 'users:login-user' %}";
                 return;
             }
 
-            // Validate comment body
-            const commentText = commentBody.value.trim();
-            if (!commentText) {
-                alert('Please enter a comment');
-                return;
-            }
-
-            // Prepare form data with proper type conversion
-            const formData = {
+            const commentData = {
                 action: 'new_comment',
-                body: commentText,
-                user_id: parseInt(userId, 10),
-                parent_id: parentIdInput.value ? parseInt(parentIdInput.value, 10) : null
+                user_id: userId,
+                body: commentBody.value,
+                parent_id: parentIdInput.value || null
             };
 
-            // Send the comment
-            socket.send(JSON.stringify(formData));
+            socket.send(JSON.stringify(commentData));
             
-            // Clear form
+            // Clear the form
             commentBody.value = '';
             parentIdInput.value = '';
             commentBody.placeholder = "अपनी टिप्पणी लिखें...";
         });
-
-        // Handle reply buttons
-        document.querySelectorAll('.reply-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const commentId = this.dataset.commentId;
-                parentIdInput.value = commentId;
-                commentBody.focus();
-                commentBody.placeholder = "Reply to comment...";
-            });
-        });
-
-        // Function to update comment count
-        function updateCommentCount() {
-            const count = document.querySelectorAll('.comment-item').length;
-            commentCount.textContent = `${count} टिप्पणियाँ`;
-        }
 
         // Load existing comments when page loads
         document.addEventListener('DOMContentLoaded', function() {

@@ -1,9 +1,13 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import Comment, Post
+from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+from star_ratings.models import Rating, UserRating
+
+from .models import Comment, Post
+
 
 class CommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -23,6 +27,13 @@ class CommentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'existing_comments',
             'comments': comments
+        }))
+
+        # Send current rating to the newly connected client
+        rating_data = await self.get_post_rating()
+        await self.send(text_data=json.dumps({
+            'type': 'current_rating',
+            'rating': rating_data
         }))
 
     @database_sync_to_async
@@ -58,6 +69,41 @@ class CommentConsumer(AsyncWebsocketConsumer):
             'replies': get_replies(comment)
         } for comment in comments]
 
+    @database_sync_to_async
+    def get_post_rating(self):
+        try:
+            post = Post.objects.get(id=self.post_id)
+            if post.ratings:
+                rating = post.ratings
+                # Get user's rating if user is authenticated
+                user_rating = None
+                if self.scope["user"].is_authenticated:
+                    try:
+                        user_rating_obj = UserRating.objects.get(
+                            rating=rating,
+                            user=self.scope["user"]
+                        )
+                        user_rating = user_rating_obj.score
+                    except UserRating.DoesNotExist:
+                        pass
+
+                return {
+                    'average': float(rating.average),
+                    'count': rating.count,
+                    'user_rating': user_rating
+                }
+            return {
+                'average': 0.0,
+                'count': 0,
+                'user_rating': None
+            }
+        except Post.DoesNotExist:
+            return {
+                'average': 0.0,
+                'count': 0,
+                'user_rating': None
+            }
+
     async def disconnect(self, close_code):
         # Leave room group
         await self.channel_layer.group_discard(
@@ -68,6 +114,7 @@ class CommentConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
+        print(f"Received WebSocket message with action: {action}")
 
         if action == 'new_comment':
             comment_data = await self.save_comment(text_data_json)
@@ -87,6 +134,18 @@ class CommentConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'like_message',
                     'message': like_data
+                }
+            )
+        elif action == 'rate_post':
+            print(f"Processing rating: {text_data_json}")
+            rating_data = await self.save_rating(text_data_json)
+            print(f"Rating data after save: {rating_data}")
+            # Send message to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'rating_message',
+                    'message': rating_data
                 }
             )
 
@@ -157,13 +216,13 @@ class CommentConsumer(AsyncWebsocketConsumer):
         try:
             user_id = data.get('user_id')
             comment_id = data.get('comment_id')
-            
+
             if not user_id or not comment_id:
                 raise ValueError("User ID and Comment ID are required")
 
             user = get_user_model().objects.get(id=user_id)
             comment = Comment.objects.get(id=comment_id)
-            
+
             # Toggle like
             if user in comment.liked_by.all():
                 comment.liked_by.remove(user)
@@ -183,3 +242,62 @@ class CommentConsumer(AsyncWebsocketConsumer):
             return {
                 'error': str(e)
             }
+
+    @database_sync_to_async
+    def save_rating(self, data):
+        try:
+            user_id = data.get('user_id')
+            rating_value = data.get('rating')
+
+            if not user_id or not rating_value:
+                raise ValueError("User ID and rating value are required")
+
+            user = get_user_model().objects.get(id=user_id)
+            post = Post.objects.get(id=self.post_id)
+
+            # Get or create rating for the post
+            content_type = ContentType.objects.get_for_model(post)
+
+            rating, created = Rating.objects.get_or_create(
+                content_type=content_type,
+                object_id=post.id
+            )
+
+            # Update or create user rating
+            user_rating, created = UserRating.objects.update_or_create(
+                rating=rating,
+                user=user,
+                defaults={'score': rating_value}
+            )
+
+            # Update post's rating reference
+            post.ratings = rating
+            post.save()
+
+            # Recalculate the rating average
+            total_score = sum(ur.score for ur in UserRating.objects.filter(rating=rating))
+            rating.count = UserRating.objects.filter(rating=rating).count()
+            rating.average = total_score / rating.count if rating.count > 0 else 0
+            rating.save()
+
+            result = {
+                'average': float(rating.average),
+                'count': rating.count,
+                'user_rating': rating_value
+            }
+            print(f"Returning rating data: {result}")
+            return result
+
+        except Exception as e:
+            print(f"Error saving rating: {str(e)}")
+            return {
+                'error': str(e)
+            }
+
+    async def rating_message(self, event):
+        message = event['message']
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'rating_update',
+            'rating': message
+        }))
