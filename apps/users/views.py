@@ -9,6 +9,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
 
 from apps.users.models import CustomUser
 
@@ -130,3 +131,24 @@ def post_login_redirect(request):
     if not user.has_set_password:
         return redirect('users:change_password')
     return redirect('/')  # or wherever you want users to go normally
+
+def user_suggestions(request):
+    query = request.GET.get('q', '')
+    if not query:
+        return JsonResponse({'users': []})
+
+    User = get_user_model()
+    users = User.objects.filter(
+        Q(username__icontains=query) |
+        Q(email__icontains=query) |
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query)
+    )[:5]  # Limit to 5 suggestions
+
+    suggestions = [{
+        'id': user.id,
+        'name': user.get_full_name() or user.email,
+        'username': user.username
+    } for user in users]
+
+    return JsonResponse({'users': suggestions})

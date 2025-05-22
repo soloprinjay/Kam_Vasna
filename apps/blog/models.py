@@ -47,8 +47,8 @@ class Comment(models.Model):
     user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='user_comments')
     body = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     liked_by = models.ManyToManyField('users.CustomUser', related_name='liked_comments', blank=True)
+    mentions = models.ManyToManyField('users.CustomUser', related_name='mentioned_in_comments', blank=True)
 
     def __str__(self):
         return f'{self.user} - {self.body[:20]}'

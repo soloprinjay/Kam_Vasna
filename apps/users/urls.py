@@ -1,5 +1,6 @@
 from django.urls import path
 from apps.users.views import RegisterView , LoginView, ForgotPasswordView,ResetPasswordView,logout_view,ChangePasswordView,post_login_redirect
+from . import views
 
 app_name = 'users'
 
@@ -11,5 +12,5 @@ urlpatterns = [
     path('reset-password/', ResetPasswordView.as_view(), name='reset_password'),
     path('post-login-redirect/', post_login_redirect, name='post-login-redirect'),
     path('logout/', logout_view, name='logout-user'),
-
+    path('api/users/suggestions/', views.user_suggestions, name='user_suggestions'),
 ]

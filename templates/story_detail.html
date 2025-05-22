@@ -33,6 +33,34 @@
     .star-rating .star:hover {
         color: #f59e0b; /* amber-500 */
     }
+
+    /* Mention styles */
+    .mention-suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 50;
+        display: none;
+    }
+
+    .mention-suggestion {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .mention-suggestion:hover {
+        background-color: #f3f4f6;
+    }
+
+    .mention {
+        color: #3b82f6;
+        font-weight: 500;
+    }
 </style>
 
 <section class="max-w-4xl mx-auto px-4 py-12">
@@ -160,17 +188,17 @@
             </div>
 
             <!-- Comment Form -->
-            <form id="comment-form" class="mb-8 bg-orange-50 dark:bg-dark-bg p-6 rounded-xl">
+            <form id="comment-form" class="mb-8 bg-orange-50 dark:bg-dark-bg p-6 rounded-xl relative">
                 {% csrf_token %}
                 <input type="hidden" name="post_id" value="{{ story.id }}">
-                <input type="hidden" name="parent_id" id="parent_id" value="">
                 <div class="mb-4">
                     <textarea
                             id="comment-body"
                             class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
                             rows="4"
-                            placeholder="अपनी टिप्पणी लिखें..."
+                            placeholder="अपनी टिप्पणी लिखें... (Use @ to mention users)"
                     ></textarea>
+                    <div id="mention-suggestions" class="mention-suggestions"></div>
                 </div>
                 <div class="flex justify-end">
                     <button
@@ -208,46 +236,14 @@
                             <!-- Comment Actions -->
                             <div class="flex items-center space-x-4 mt-4">
                                 <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
-                                        data-comment-id="{{ comment.id }}">
+                                        data-comment-id="{{ comment.id }}"
+                                        data-user-name="{{ comment.user.get_full_name|default:comment.user.email }}">
                                     <i class="fas fa-reply mr-1"></i> जवाब दें
                                 </button>
                                 <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
                                         data-comment-id="{{ comment.id }}">
-                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
+                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">{{ comment.likes }}</span>
                                 </button>
-                            </div>
-
-                            <!-- Replies Container -->
-                            <div class="replies-container mt-4 space-y-4 pl-8">
-                                {% for reply in comment.replies.all %}
-                                <div class="reply-item bg-white dark:bg-dark-card p-4 rounded-lg"
-                                     data-comment-id="{{ reply.id }}">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white text-sm">
-                                            {{ reply.user.get_full_name|first|default:reply.user.email|first }}
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-1">
-                                                <h4 class="font-semibold text-orange-800 dark:text-dark-text text-sm">{{
-                                                    reply.user.get_full_name|default:reply.user.email }}</h4>
-                                                <span class="text-xs text-gray-500 dark:text-dark-text-secondary">{{ reply.timestamp|timesince }} पहले</span>
-                                            </div>
-                                            <p class="text-gray-600 dark:text-dark-text-secondary text-sm">{{ reply.body
-                                                }}</p>
-                                            <div class="flex items-center space-x-3 mt-2">
-                                                <button class="reply-btn text-xs text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
-                                                        data-comment-id="{{ reply.id }}">
-                                                    <i class="fas fa-reply mr-1"></i> जवाब दें
-                                                </button>
-                                                <button class="like-btn text-xs text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
-                                                        data-comment-id="{{ reply.id }}">
-                                                    <i class="fas fa-thumbs-up mr-1"></i> पसंद
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -267,35 +263,78 @@
     document.addEventListener('DOMContentLoaded', function () {
         const commentForm = document.getElementById('comment-form');
         const commentBody = document.getElementById('comment-body');
-        const parentIdInput = document.getElementById('parent_id');
         const commentsContainer = document.getElementById('comments-container');
         const commentCount = document.getElementById('comment-count');
+        const mentionSuggestions = document.getElementById('mention-suggestions');
+        let currentMentionQuery = '';
+        let mentionStartIndex = -1;
+
+        // Function to fetch user suggestions
+        async function fetchUserSuggestions(query) {
+            try {
+                const response = await fetch(`/api/users/suggestions/?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                return data.users;
+            } catch (error) {
+                console.error('Error fetching user suggestions:', error);
+                return [];
+            }
+        }
+
+        // Function to show mention suggestions
+        function showMentionSuggestions(users) {
+            mentionSuggestions.innerHTML = '';
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'mention-suggestion';
+                div.textContent = user.name;
+                div.onclick = () => insertMention(user);
+                mentionSuggestions.appendChild(div);
+            });
+            mentionSuggestions.style.display = 'block';
+        }
+
+        // Function to insert mention
+        function insertMention(user) {
+            const text = commentBody.value;
+            const beforeMention = text.substring(0, mentionStartIndex);
+            const afterMention = text.substring(mentionStartIndex + currentMentionQuery.length + 1);
+            commentBody.value = `${beforeMention}@${user.name} ${afterMention}`;
+            mentionSuggestions.style.display = 'none';
+            commentBody.focus();
+        }
+
+        // Handle @ symbol in comment
+        commentBody.addEventListener('input', async function(e) {
+            const text = e.target.value;
+            const cursorPosition = e.target.selectionStart;
+            
+            // Find the last @ symbol before cursor
+            const lastAtIndex = text.lastIndexOf('@', cursorPosition);
+            if (lastAtIndex !== -1) {
+                const textAfterAt = text.substring(lastAtIndex + 1, cursorPosition);
+                if (!textAfterAt.includes(' ')) {
+                    currentMentionQuery = textAfterAt;
+                    mentionStartIndex = lastAtIndex;
+                    const users = await fetchUserSuggestions(currentMentionQuery);
+                    showMentionSuggestions(users);
+                    return;
+                }
+            }
+            mentionSuggestions.style.display = 'none';
+        });
+
+        // Close mention suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mentionSuggestions.contains(e.target) && e.target !== commentBody) {
+                mentionSuggestions.style.display = 'none';
+            }
+        });
+
+        // Star Rating functionality
         const storyRating = document.getElementById('story-rating');
         const storyStars = storyRating.querySelectorAll('.star');
         let currentStoryRating = parseInt(storyRating.dataset.rating) || 0;
-
-        // Initialize comment rating
-        const commentRating = document.getElementById('story-rating');
-        const commentStars = commentRating.querySelectorAll('.star');
-        let currentCommentRating = 0;
-
-        // WebSocket connection
-        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const ws_path = `${ws_scheme}://${window.location.host}/ws/comments/{{ story.id }}/`;
-        const socket = new WebSocket(ws_path);
-
-        // WebSocket connection status logging
-        socket.onopen = function(e) {
-            console.log("WebSocket connection established");
-        };
-
-        socket.onerror = function(error) {
-            console.error("WebSocket error:", error);
-        };
-
-        socket.onclose = function(e) {
-            console.log("WebSocket connection closed");
-        };
 
         // Function to update star display
         function updateStars(stars, rating) {
@@ -350,102 +389,8 @@
             });
         });
 
-        // Add event listeners to comment stars
-        commentStars.forEach((star, index) => {
-            const rating = index + 1;
-
-            // Mouseover event - only preview rating
-            star.addEventListener('mouseover', function(e) {
-                e.preventDefault();
-                updateStars(commentStars, rating);
-            });
-
-            // Mouseout event - restore to current rating
-            star.addEventListener('mouseout', function(e) {
-                e.preventDefault();
-                updateStars(commentStars, currentCommentRating);
-            });
-
-            // Click event - update comment rating
-            star.addEventListener('click', function(e) {
-                e.preventDefault();
-                currentCommentRating = rating;
-                updateStars(commentStars, currentCommentRating);
-            });
-        });
-
-        // WebSocket message handler
-        socket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            console.log("Received WebSocket message:", data);
-            
-            // Handle existing comments
-            if (data.type === 'existing_comments') {
-                commentsContainer.innerHTML = '';
-                data.comments.forEach(comment => {
-                    addCommentToDOM(comment, commentsContainer);
-                });
-                updateCommentCount();
-                return;
-            }
-
-            // Handle current rating
-            if (data.type === 'current_rating') {
-                console.log("Received current rating:", data.rating);
-                updateStarRating(data.rating);
-                return;
-            }
-
-            // Handle rating updates
-            if (data.type === 'rating_update') {
-                console.log("Received rating update:", data.rating);
-                updateStarRating(data.rating);
-                return;
-            }
-            
-            // Handle new comments
-            if (data.error) {
-                alert('Error: ' + data.error);
-                return;
-            }
-
-            // Handle like updates
-            if (data.comment_id) {
-                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
-                if (commentElement) {
-                    const likeButton = commentElement.querySelector('.like-btn');
-                    const likeCount = commentElement.querySelector('.like-count');
-                    
-                    if (data.liked) {
-                        likeButton.classList.add('liked');
-                    } else {
-                        likeButton.classList.remove('liked');
-                    }
-                    
-                    likeCount.textContent = data.likes;
-                }
-                return;
-            }
-
-            // If it's a reply, find the parent comment and add it there
-            if (data.parent_id) {
-                const parentComment = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
-                if (parentComment) {
-                    const repliesContainer = parentComment.querySelector('.replies-container');
-                    if (repliesContainer) {
-                        addCommentToDOM(data, repliesContainer, true);
-                    }
-                }
-            } else {
-                // Add new top-level comment
-                addCommentToDOM(data, commentsContainer);
-            }
-            updateCommentCount();
-        };
-
         // Function to update star rating display
         function updateStarRating(ratingData) {
-            console.log("Updating star rating with data:", ratingData);
             if (ratingData.error) {
                 console.error("Error updating rating:", ratingData.error);
                 return;
@@ -454,7 +399,6 @@
             // Update current rating
             currentStoryRating = Math.round(ratingData.average);
             storyRating.dataset.rating = currentStoryRating;
-            console.log("Updated current rating to:", currentStoryRating);
 
             // Update star display
             updateStars(storyStars, currentStoryRating);
@@ -463,7 +407,6 @@
             const ratingCount = document.querySelector('.star-rating + span');
             if (ratingCount) {
                 ratingCount.textContent = `(${ratingData.count} रेटिंग)`;
-                console.log("Updated rating count to:", ratingData.count);
             }
 
             // Update user's rating if available
@@ -472,10 +415,25 @@
             }
         }
 
+        // Function to format comment text with mentions
+        function formatCommentText(text, mentions) {
+            if (!mentions) return text;
+            
+            let formattedText = text;
+            mentions.forEach(mention => {
+                const mentionRegex = new RegExp(`@${mention.name}`, 'g');
+                formattedText = formattedText.replace(
+                    mentionRegex,
+                    `<span class="mention">@${mention.name}</span>`
+                );
+            });
+            return formattedText;
+        }
+
         // Function to add a comment to the DOM
-        function addCommentToDOM(comment, container, isReply = false) {
+        function addCommentToDOM(comment, container) {
             const commentHTML = `
-            <div class="comment-item ${isReply ? 'bg-white dark:bg-dark-card' : 'bg-orange-50 dark:bg-dark-bg'} p-6 rounded-xl" data-comment-id="${comment.id}">
+            <div class="comment-item bg-orange-50 dark:bg-dark-bg p-6 rounded-xl" data-comment-id="${comment.id}">
                 <div class="flex items-start space-x-4">
                     <div class="flex-shrink-0">
                         <div class="w-10 h-10 rounded-full bg-orange-600 dark:bg-dark-accent flex items-center justify-center text-white">
@@ -487,34 +445,36 @@
                             <h3 class="font-semibold text-orange-800 dark:text-dark-text">${comment.user.name}</h3>
                             <span class="text-sm text-gray-500 dark:text-dark-text-secondary">${comment.timestamp}</span>
                         </div>
-                        <p class="text-gray-600 dark:text-dark-text-secondary">${comment.body}</p>
+                        <p class="text-gray-600 dark:text-dark-text-secondary">${formatCommentText(comment.body, comment.mentions)}</p>
                         <div class="flex items-center space-x-4 mt-4">
-                            <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300" data-comment-id="${comment.id}">
+                            <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                    data-comment-id="${comment.id}"
+                                    data-user-name="${comment.user.name}">
                                 <i class="fas fa-reply mr-1"></i> जवाब दें
                             </button>
-                            <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300 ${comment.liked ? 'liked' : ''}" data-comment-id="${comment.id}">
+                            <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300" data-comment-id="${comment.id}">
                                 <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">${comment.likes}</span>
                             </button>
                         </div>
-                        <div class="replies-container mt-4 space-y-4 pl-8"></div>
                     </div>
                 </div>
             </div>
             `;
 
-            // Insert the comment into the container
-            container.insertAdjacentHTML('beforeend', commentHTML);
+            // Insert the comment at the beginning of the container
+            container.insertAdjacentHTML('afterbegin', commentHTML);
 
             // Add event listeners to the new comment's buttons
-            const newComment = container.lastElementChild;
+            const newComment = container.firstElementChild;
             const replyButton = newComment.querySelector('.reply-btn');
             const likeButton = newComment.querySelector('.like-btn');
 
             replyButton.addEventListener('click', function() {
-                const commentId = this.dataset.commentId;
-                parentIdInput.value = commentId;
+                const userName = this.dataset.userName;
+                commentBody.value = `@${userName} `;
                 commentBody.focus();
-                commentBody.placeholder = "Reply to comment...";
+                // Scroll to comment form
+                commentForm.scrollIntoView({ behavior: 'smooth' });
             });
 
             likeButton.addEventListener('click', function() {
@@ -531,14 +491,6 @@
                     comment_id: commentId
                 }));
             });
-
-            // If this comment has replies, recursively add them
-            if (comment.replies && comment.replies.length > 0) {
-                const repliesContainer = newComment.querySelector('.replies-container');
-                comment.replies.forEach(reply => {
-                    addCommentToDOM(reply, repliesContainer, true);
-                });
-            }
         }
 
         // Function to update comment count
@@ -560,41 +512,79 @@
             const commentData = {
                 action: 'new_comment',
                 user_id: userId,
-                body: commentBody.value,
-                parent_id: parentIdInput.value || null
+                body: commentBody.value
             };
 
             socket.send(JSON.stringify(commentData));
             
             // Clear the form
             commentBody.value = '';
-            parentIdInput.value = '';
-            commentBody.placeholder = "अपनी टिप्पणी लिखें...";
         });
 
-        // Load existing comments when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all existing comments from the page
-            const existingComments = document.querySelectorAll('.comment-item');
-            existingComments.forEach(comment => {
-                const commentId = comment.dataset.commentId;
-                const repliesContainer = comment.querySelector('.replies-container');
-                if (repliesContainer) {
-                    const replies = repliesContainer.querySelectorAll('.reply-item');
-                    replies.forEach(reply => {
-                        const replyId = reply.dataset.commentId;
-                        // Add event listeners to reply buttons
-                        const replyButtons = reply.querySelectorAll('.reply-btn');
-                        replyButtons.forEach(button => {
-                            button.addEventListener('click', function() {
-                                const commentId = this.dataset.commentId;
-                                parentIdInput.value = commentId;
-                                commentBody.focus();
-                                commentBody.placeholder = "Reply to comment...";
-                            });
-                        });
-                    });
+        // WebSocket connection
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const ws_path = `${ws_scheme}://${window.location.host}/ws/comments/{{ story.id }}/`;
+        const socket = new WebSocket(ws_path);
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            if (data.type === 'existing_comments') {
+                commentsContainer.innerHTML = '';
+                data.comments.forEach(comment => {
+                    addCommentToDOM(comment, commentsContainer);
+                });
+                updateCommentCount();
+                return;
+            }
+
+            // Handle current rating
+            if (data.type === 'current_rating') {
+                updateStarRating(data.rating);
+                return;
+            }
+
+            // Handle rating updates
+            if (data.type === 'rating_update') {
+                updateStarRating(data.rating);
+                return;
+            }
+
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+
+            if (data.comment_id) {
+                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
+                if (commentElement) {
+                    const likeButton = commentElement.querySelector('.like-btn');
+                    const likeCount = commentElement.querySelector('.like-count');
+                    
+                    if (data.liked) {
+                        likeButton.classList.add('liked');
+                    } else {
+                        likeButton.classList.remove('liked');
+                    }
+                    
+                    likeCount.textContent = data.likes;
                 }
+                return;
+            }
+
+            // Add new comment
+            addCommentToDOM(data, commentsContainer);
+            updateCommentCount();
+        };
+
+        // Add event listeners to existing reply buttons
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userName = this.dataset.userName;
+                commentBody.value = `@${userName} `;
+                commentBody.focus();
+                // Scroll to comment form
+                commentForm.scrollIntoView({ behavior: 'smooth' });
             });
         });
     });

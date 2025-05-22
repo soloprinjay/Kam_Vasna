@@ -24,9 +24,9 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'post', 'user', 'timestamp', 'parent')
+    list_display = ('id', 'post', 'user', 'timestamp')
     list_filter = ('timestamp', 'post', 'user')
     search_fields = ('body', 'user__email', 'post__title')
     readonly_fields = ('timestamp',)
-    raw_id_fields = ('user', 'post', 'parent')
+    raw_id_fields = ('user', 'post')
 

@@ -1,10 +1,13 @@
 import json
+import re
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from star_ratings.models import Rating, UserRating
+from django.contrib import auth
+from django.db import models
 
 from .models import Comment, Post
 
@@ -38,23 +41,7 @@ class CommentConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_existing_comments(self):
-        def get_replies(comment):
-            replies = Comment.objects.filter(parent=comment).order_by('timestamp')
-            return [{
-                'id': reply.id,
-                'user': {
-                    'id': reply.user.id,
-                    'name': reply.user.get_full_name() or reply.user.email,
-                    'avatar': reply.user.avatar.url if hasattr(reply.user, 'avatar') else None
-                },
-                'body': reply.body,
-                'timestamp': reply.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                'parent_id': reply.parent.id,
-                'likes': reply.liked_by.count(),
-                'replies': get_replies(reply)  # Recursively get nested replies
-            } for reply in replies]
-
-        comments = Comment.objects.filter(post_id=self.post_id, parent=None).order_by('-timestamp')
+        comments = Comment.objects.filter(post_id=self.post_id).order_by('-timestamp')
         return [{
             'id': comment.id,
             'user': {
@@ -64,9 +51,11 @@ class CommentConsumer(AsyncWebsocketConsumer):
             },
             'body': comment.body,
             'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'parent_id': None,
             'likes': comment.liked_by.count(),
-            'replies': get_replies(comment)
+            'mentions': [{
+                'id': user.id,
+                'name': user.get_full_name() or user.email
+            } for user in comment.mentions.all()]
         } for comment in comments]
 
     @database_sync_to_async
@@ -175,22 +164,20 @@ class CommentConsumer(AsyncWebsocketConsumer):
             user = get_user_model().objects.get(id=user_id)
             post = Post.objects.get(id=self.post_id)
 
-            parent = None
-            if data.get('parent_id'):
-                try:
-                    parent_id = int(data['parent_id'])
-                    parent = Comment.objects.get(id=parent_id)
-                except (ValueError, TypeError):
-                    raise ValueError("Invalid parent comment ID format")
-                except Comment.DoesNotExist:
-                    parent = None
+            # Process mentions in the comment body
+            body = data['body']
+            # Get mentioned users synchronously since we're in a sync_to_async context
+            mentioned_users = self.process_mentions_sync(body)
 
             comment = Comment.objects.create(
                 post=post,
                 user=user,
-                body=data['body'],
-                parent=parent
+                body=body
             )
+
+            # Add mentions to the comment
+            if mentioned_users:
+                comment.mentions.set(mentioned_users)
 
             return {
                 'id': comment.id,
@@ -201,8 +188,11 @@ class CommentConsumer(AsyncWebsocketConsumer):
                 },
                 'body': comment.body,
                 'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                'parent_id': parent.id if parent is not None else None,
-                'likes': 0
+                'likes': 0,
+                'mentions': [{
+                    'id': user.id,
+                    'name': user.get_full_name() or user.email
+                } for user in mentioned_users]
             }
 
         except Exception as e:
@@ -210,6 +200,33 @@ class CommentConsumer(AsyncWebsocketConsumer):
             return {
                 'error': str(e)
             }
+
+    def process_mentions_sync(self, text):
+        """Process @ mentions in the comment text and return list of mentioned users"""
+        User = get_user_model()
+        mentioned_users = []
+        
+        # Find all @mentions in the text
+        mentions = re.findall(r'@([^@\s]+)', text)
+        
+        for mention in mentions:
+            try:
+                # Try to find user by full_name or email
+                user = User.objects.filter(
+                    models.Q(full_name__iexact=mention) | 
+                    models.Q(email__iexact=mention)
+                ).first()
+                if user:
+                    mentioned_users.append(user)
+            except User.DoesNotExist:
+                continue
+                
+        return mentioned_users
+
+    @database_sync_to_async
+    def process_mentions(self, text):
+        """Async wrapper for process_mentions_sync"""
+        return self.process_mentions_sync(text)
 
     @database_sync_to_async
     def toggle_comment_like(self, data):
