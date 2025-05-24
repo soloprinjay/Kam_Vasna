@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth import login
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 import secrets
 
 User = get_user_model()
@@ -13,10 +15,20 @@ def set_random_password_and_send_email(user,request):
 
     login(request, user)
 
+    # Render the HTML template
+    html_message = render_to_string('email/password_reset_email.html', {
+        'user': user,
+        'random_password': random_password
+    })
+    
+    # Create plain text version
+    plain_message = strip_tags(html_message)
+
     send_mail(
-        subject="Your new password",
-        message=f"Hello {user.email},\n\nHere is your password: {random_password}\n\nPlease change it after logging in.",
+        subject="आपका नया पासवर्ड",
+        message=plain_message,
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[user.email],
         fail_silently=False,
+        html_message=html_message
     )

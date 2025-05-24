@@ -445,7 +445,7 @@
                             <h3 class="font-semibold text-orange-800 dark:text-dark-text">${comment.user.name}</h3>
                             <span class="text-sm text-gray-500 dark:text-dark-text-secondary">${comment.timestamp}</span>
                         </div>
-                        <p class="text-gray-600 dark:text-dark-text-secondary">${formatCommentText(comment.body, comment.mentions)}</p>
+                        <p class="text-gray-600 dark:text-dark-text-secondary break-all whitespace-normal">${formatCommentText(comment.body, comment.mentions)}</p>
                         <div class="flex items-center space-x-4 mt-4">
                             <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
                                     data-comment-id="${comment.id}"

@@ -152,3 +152,8 @@ def user_suggestions(request):
     } for user in users]
 
     return JsonResponse({'users': suggestions})
+
+class UpdateProfileView(View):
+    def get(self, request):
+        return render(request, 'update_profile.html')
+

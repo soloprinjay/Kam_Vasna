@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-amber-50 dark:bg-dark-bg transition-colors duration-300">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Update Profile Form -->
+        <div class="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-8 transition-colors duration-300 mt-8">
+            <h2 class="text-2xl font-bold text-orange-800 dark:text-dark-text mb-6">प्रोफाइल अपडेट करें</h2>
+            
+            <form class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Name Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first-name" class="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                            पहला नाम
+                        </label>
+                        <input type="text" 
+                               id="first-name" 
+                               name="first_name" 
+                               value="{{ user.first_name }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
+                    </div>
+                    <div>
+                        <label for="last-name" class="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                            आखिरी नाम
+                        </label>
+                        <input type="text" 
+                               id="last-name" 
+                               name="last_name" 
+                               value="{{ user.last_name }}"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
+                    </div>
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                        ईमेल पता
+                    </label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           value="{{ user.email }}"
+                           class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
+                </div>
+
+                <!-- Bio Field -->
+                <div>
+                    <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
+                        अपने बारे में
+                    </label>
+                    <textarea id="bio" 
+                              name="bio" 
+                              rows="4"
+                              class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300"
+                              placeholder="अपने बारे में कुछ लिखें...">{{ user.profile.bio|default:'' }}</textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'users:change_password' %}"
+                       class="px-6 py-3 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-600 transition duration-300">
+                        पासवर्ड बदलें
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-3 bg-orange-600 dark:bg-dark-accent text-white rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
+                        प्रोफाइल अपडेट करें
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %} 

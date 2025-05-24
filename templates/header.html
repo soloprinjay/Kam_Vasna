@@ -29,7 +29,26 @@
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
                     <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'users:logout-user' %}" class="hover:text-orange-200 transition duration-300">logout</a>
+                        <!-- Profile Settings Dropdown -->
+                        <div class="relative">
+                            <button id="profile-dropdown-button" class="flex items-center space-x-2 hover:text-orange-200 transition duration-300 focus:outline-none">
+                                <i class="fas fa-user-circle text-xl"></i>
+                                <span>प्रोफाइल</span>
+                                <i class="fas fa-chevron-down text-sm"></i>
+                            </button>
+                            <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-56 bg-white dark:bg-dark-card rounded-xl shadow-lg border border-gray-100 dark:border-dark-border py-2 z-50 hidden">
+                                <a href="{% url 'users:update_profile' %}" class="flex items-center gap-2 px-5 py-3 text-gray-700 dark:text-dark-text font-medium hover:bg-orange-100 dark:hover:bg-dark-accent transition">
+                                    <i class="fas fa-user-edit"></i> प्रोफाइल बदलें
+                                </a>
+                                <a href="{% url 'users:change_password' %}" class="flex items-center gap-2 px-5 py-3 text-gray-700 dark:text-dark-text font-medium hover:bg-orange-100 dark:hover:bg-dark-accent transition">
+                                    <i class="fas fa-key"></i> पासवर्ड बदलें
+                                </a>
+                                <div class="border-t border-gray-200 dark:border-dark-border my-1"></div>
+                                <a href="{% url 'users:logout-user' %}" class="flex items-center gap-2 px-5 py-3 text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/30 transition">
+                                    <i class="fas fa-sign-out-alt"></i> लॉगआउट
+                                </a>
+                            </div>
+                        </div>
                     {% endif %}
                     <!-- Dark Mode Toggle Button -->
                     <button id="dark-mode-toggle" class="p-2 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent focus:outline-none">
@@ -59,11 +78,35 @@
                     <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
                     <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:update_profile' %}" class="hover:text-orange-200 transition duration-300">प्रोफाइल बदलें</a>
+                        <a href="{% url 'users:change_password' %}" class="hover:text-orange-200 transition duration-300">पासवर्ड बदलें</a>
+                        <a href="{% url 'users:logout-user' %}" class="text-red-300 hover:text-red-200 transition duration-300">लॉगआउट</a>
+                    {% endif %}
                 </nav>
             </div>
         </div>
     </header>
 
     <script src="{% static 'js/darkMode.js' %}"></script>
+    <script>
+        // Profile Dropdown Toggle
+        const profileButton = document.getElementById('profile-dropdown-button');
+        const profileMenu = document.getElementById('profile-dropdown-menu');
+
+        if (profileButton && profileMenu) {
+            profileButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!profileButton.contains(event.target) && !profileMenu.contains(event.target)) {
+                    profileMenu.classList.add('hidden');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
