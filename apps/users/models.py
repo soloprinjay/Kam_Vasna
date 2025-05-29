@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
     has_set_password = models.BooleanField(default=False)
     terms_confirmed = models.BooleanField(default=False)
     full_name = models.CharField(_("full name"), max_length=255)
+    self_info = models.TextField()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

@@ -9,9 +9,8 @@
         <div class="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-8 transition-colors duration-300 mt-8">
             <h2 class="text-2xl font-bold text-orange-800 dark:text-dark-text mb-6">प्रोफाइल अपडेट करें</h2>
             
-            <form class="space-y-6">
+            <form action="{% url 'users:update_profile' %}" method="post" class="space-y-6">
                 {% csrf_token %}
-                
                 <!-- Name Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -57,7 +56,7 @@
                               name="bio" 
                               rows="4"
                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300"
-                              placeholder="अपने बारे में कुछ लिखें...">{{ user.profile.bio|default:'' }}</textarea>
+                              placeholder="अपने बारे में कुछ लिखें...">{{ user.self_info|default:'' }}</textarea>
                 </div>
 
                 <!-- Submit Button -->

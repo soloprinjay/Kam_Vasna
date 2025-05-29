@@ -9,6 +9,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
+from django.contrib import messages
 from django.db.models import Q
 
 from apps.users.models import CustomUser
@@ -129,7 +130,8 @@ def logout_view(request):
 def post_login_redirect(request):
     user = request.user
     if not user.has_set_password:
-        return redirect('users:change_password')
+        messages.success(request, "Please check your email, we have sent you your new password")
+        return redirect('/')
     return redirect('/')  # or wherever you want users to go normally
 
 def user_suggestions(request):
@@ -156,4 +158,31 @@ def user_suggestions(request):
 class UpdateProfileView(View):
     def get(self, request):
         return render(request, 'update_profile.html')
+
+    def post(self, request):
+        user = request.user
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        self_info = request.POST.get('bio', '').strip()
+
+        # Update user fields
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.self_info = self_info
+        user.save()
+
+        messages.success(request, 'Your profile has been updated successfully.')
+        return redirect('users:update_profile')  # Use your appropriate URL name
+
+
+
+
+
+
+
+
+
+
 

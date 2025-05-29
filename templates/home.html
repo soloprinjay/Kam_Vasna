@@ -16,8 +16,14 @@
             <rect width="100%" height="100%" fill="url(#pattern)"/>
         </svg>
     </div>
-
     <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <div class="flex flex-col md:flex-row items-center">
             <!-- Text Content -->
             <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
