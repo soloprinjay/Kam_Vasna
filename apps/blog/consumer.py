@@ -77,20 +77,17 @@ class CommentConsumer(AsyncWebsocketConsumer):
                         pass
 
                 return {
-                    'average': float(rating.average),
-                    'count': rating.count,
-                    'user_rating': user_rating
+                    'user_rating': user_rating,
+                    'count': rating.count
                 }
             return {
-                'average': 0.0,
-                'count': 0,
-                'user_rating': None
+                'user_rating': None,
+                'count': 0
             }
         except Post.DoesNotExist:
             return {
-                'average': 0.0,
-                'count': 0,
-                'user_rating': None
+                'user_rating': None,
+                'count': 0
             }
 
     async def disconnect(self, close_code):
@@ -291,16 +288,13 @@ class CommentConsumer(AsyncWebsocketConsumer):
             post.ratings = rating
             post.save()
 
-            # Recalculate the rating average
-            total_score = sum(ur.score for ur in UserRating.objects.filter(rating=rating))
+            # Update rating count
             rating.count = UserRating.objects.filter(rating=rating).count()
-            rating.average = total_score / rating.count if rating.count > 0 else 0
             rating.save()
 
             result = {
-                'average': float(rating.average),
-                'count': rating.count,
-                'user_rating': rating_value
+                'user_rating': rating_value,
+                'count': rating.count
             }
             print(f"Returning rating data: {result}")
             return result

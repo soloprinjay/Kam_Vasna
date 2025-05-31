@@ -397,7 +397,7 @@
             }
 
             // Update current rating
-            currentStoryRating = Math.round(ratingData.average);
+            currentStoryRating = ratingData.user_rating || 0;
             storyRating.dataset.rating = currentStoryRating;
 
             // Update star display
@@ -407,11 +407,6 @@
             const ratingCount = document.querySelector('.star-rating + span');
             if (ratingCount) {
                 ratingCount.textContent = `(${ratingData.count} रेटिंग)`;
-            }
-
-            // Update user's rating if available
-            if (ratingData.user_rating) {
-                updateStars(storyStars, ratingData.user_rating);
             }
         }
 

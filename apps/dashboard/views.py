@@ -1,11 +1,10 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.views import View
-from apps.dashboard.models import Contact
+from apps.dashboard.models import Contact, Subscription
 from django.http import JsonResponse
 from django.contrib import messages
-
 
 # Create your views here.
 
@@ -29,3 +28,19 @@ class ContactView(View):
             return JsonResponse({'status': 'success', 'message': 'Message sent successfully!'})
         else:
             return JsonResponse({'status': 'error', 'message': 'Please fill in all fields.'})
+
+
+class UserSubscription(View):
+    def post(self, request):
+        email = request.POST.get('email')
+
+        if email:
+            if not Subscription.objects.filter(email=email).exists():
+                Subscription.objects.create(email=email)
+                messages.success(request, "Congratulations, you are now one of our members!")
+            else:
+                messages.info(request, "You're already subscribed with this email.")
+        else:
+            messages.error(request, "Please enter a valid email address.")
+
+        return redirect('dashboard:stories')

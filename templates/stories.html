@@ -154,8 +154,9 @@
                 प्राप्त करें। हमारी न्यूज़लेटर
                 से जुड़ें और कभी भी कोई कहानी न चूकें।</p>
 
-            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                <input type="email" placeholder="आपका ईमेल पता"
+            <form method="post" action="{% url 'dashboard:subscription' %}"  class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                {% csrf_token %}
+                <input type="email" placeholder="आपका ईमेल पता" name="email"
                        class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-dark-card dark:text-dark-text dark:border-dark-border">
                 <button type="submit"
                         class="bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300">

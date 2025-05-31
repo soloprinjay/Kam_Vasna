@@ -6,6 +6,7 @@ from django.views import View
 from hitcount.utils import get_hitcount_model
 from hitcount.views import HitCountMixin
 
+
 from .models import Post, Category
 
 

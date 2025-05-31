@@ -54,5 +54,3 @@ class Comment(models.Model):
         return f'{self.user} - {self.body[:20]}'
 
 
-
-
