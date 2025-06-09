@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
     'channels',
 ]
 
@@ -65,17 +66,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
         'APP': {
             'client_id': os.getenv('GOOGLE_CLIENT_ID'),
             'secret': os.getenv('GOOGLE_SECRET_KEY'),
             'key': ''
+        }
+    },
+    'facebook': {
+        'APP': {
+            'client_id': os.getenv('FACEBOOK_CLIENT_ID'),
+            'secret': os.getenv('FACEBOOK_SECRET_KEY'),
+        },
+        'AUTH_PARAMS' : {
+             'auth_type' : 'reauthenticate'
         }
     }
 }
@@ -92,7 +98,6 @@ EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 LOGIN_REDIRECT_URL = 'users:post-login-redirect'
@@ -102,7 +107,6 @@ LOGOUT_REDIRECT_URL = '/'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days (default, for Remember Me)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # if remember me is NOT checked
-
 
 ROOT_URLCONF = 'core.urls'
 
@@ -130,9 +134,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-
 WSGI_APPLICATION = 'core.wsgi.application'
-
 
 DATABASES = {
     "default": {
