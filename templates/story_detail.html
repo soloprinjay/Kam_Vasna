@@ -75,6 +75,16 @@
                 {{ story.category }}
             </span>
 
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in story.tags.all %}
+                <a href="{% url 'dashboard:stories' %}?tag={{ tag.name }}" 
+                   class="inline-block bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text text-sm font-medium px-3 py-1 rounded-full hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                    #{{ tag.name }}
+                </a>
+                {% endfor %}
+            </div>
+
             <!-- Title -->
             <h1 class="text-3xl font-bold text-orange-800 dark:text-dark-text mb-4">
                 {{ story.title }}

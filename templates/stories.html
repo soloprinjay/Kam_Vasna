@@ -33,7 +33,7 @@
             <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center md:justify-start">
                 <a href="{% url 'dashboard:stories' %}"
                    class="px-4 py-2 rounded-full text-sm font-medium transition duration-300
-                          {% if not selected_category %}
+                          {% if not selected_category and not selected_tag %}
                               bg-orange-600 dark:bg-dark-accent text-white
                           {% else %}
                               bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text hover:bg-orange-200 dark:hover:bg-dark-accent
@@ -41,7 +41,7 @@
                     सभी
                 </a>
                 {% for cat in categories %}
-                <a href="{% url 'dashboard:stories' %}?category={{ cat }}"
+                <a href="{% url 'dashboard:stories' %}?category={{ cat }}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}"
                    class="px-4 py-2 rounded-full text-sm font-medium transition duration-300
                           {% if selected_category == cat|stringformat:'s' %}
                               bg-orange-600 dark:bg-dark-accent text-white
@@ -52,6 +52,20 @@
                 </a>
                 {% endfor %}
             </div>
+
+            <!-- Tags -->
+            {% if selected_tag %}
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-sm text-gray-600 dark:text-dark-text-secondary">Selected tag:</span>
+                <a href="{% url 'dashboard:stories' %}{% if selected_category %}?category={{ selected_category }}{% endif %}"
+                   class="inline-flex items-center gap-1 px-3 py-1 bg-orange-600 dark:bg-dark-accent text-white text-sm font-medium rounded-full hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
+                    #{{ selected_tag }}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -76,6 +90,15 @@
                         <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
                         <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
                             {{ story.description|safe|truncatewords:30 }}
+                        </div>
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in story.tags.all %}
+                            <a href="{% url 'dashboard:stories' %}?tag={{ tag.name }}"
+                               class="inline-block bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text text-xs font-medium px-2 py-1 rounded-full hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                                #{{ tag.name }}
+                            </a>
+                            {% endfor %}
                         </div>
                         <a href="{% url 'blog:story_detail' slug=story.slug %}"
                            class="mt-4 block bg-orange-600 dark:bg-dark-bg hover:bg-orange-700 dark:hover:bg-dark-accent text-orange-600 dark:text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">

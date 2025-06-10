@@ -22,12 +22,15 @@ class HomeView(View):
 class StoriesView(View):
     def get(self, request):
         category = request.GET.get('category')
+        tag = request.GET.get('tag')
         page_number = request.GET.get('page', 1)
 
+        stories = Post.objects.all()
+
         if category:
-            stories = Post.objects.filter(category__name=category)
-        else:
-            stories = Post.objects.all()
+            stories = stories.filter(category__name=category)
+        if tag:
+            stories = stories.filter(tags__name=tag)
 
         paginator = Paginator(stories, 3)  # Show 6 stories per page
         page_obj = paginator.get_page(page_number)
@@ -36,7 +39,8 @@ class StoriesView(View):
         return render(request, 'stories.html', {
             'stories': page_obj,
             'categories': categories,
-            'selected_category': category
+            'selected_category': category,
+            'selected_tag': tag
         })
 
 
