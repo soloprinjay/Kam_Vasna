@@ -172,11 +172,32 @@
                         <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
                             {{ recent_post.description|safe|truncatewords:30 }}
                         </div>
-                        <div class="flex items-center justify-end mt-4">
+                        <div class="flex items-center justify-between mt-4">
                             <a href="{% url 'blog:story_detail' slug=recent_post.slug %}"
                                class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
-                                पूरी कहानी पढ़ें &rarr;
+                                पूरी कहानी पढ़ें
                             </a>
+                            <div class="flex items-center space-x-4">
+                                <a href="{% url 'blog:story_detail' slug=recent_post.slug %}" class="flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    <span>{{ recent_post.hit_count_generic.first.hits|default:0 }}</span>
+                                </a>
+                                <button class="like-btn flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-red-600 transition duration-300" data-post-id="{{ recent_post.id }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                    <span class="like-count">{{ recent_post.likes|default:0 }}</span>
+                                </button>
+                                <a href="{% url 'blog:story_detail' slug=recent_post.slug %}#comments" class="flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                    <span>{{ recent_post.comments.count|default:0 }}</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

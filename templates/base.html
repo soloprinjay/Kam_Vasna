@@ -82,6 +82,28 @@
             icon.classList.add('fa-times');
         }
     });
+
+    const messageContainer = document.getElementById('message-container');
+    const messageBox = document.getElementById('message-box');
+    
+    if (messageBox) {
+        // Show the message container
+        messageContainer.style.display = 'block';
+        
+        // Add slide-in animation
+        messageBox.style.transform = 'translateX(0)';
+        
+        // Hide the message after 5 seconds
+        setTimeout(function() {
+            messageBox.style.transform = 'translateX(100%)';
+            messageBox.style.opacity = '0';
+            
+            // Remove the element after animation
+            setTimeout(function() {
+                messageContainer.style.display = 'none';
+            }, 300);
+        }, 5000);
+    }
 </script>
 
 </body>

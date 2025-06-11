@@ -28,7 +28,7 @@
 <!-- Filter Section -->
 <section class="py-8 bg-white dark:bg-dark-card shadow-md transition-colors duration-300">
     <div class="container mx-auto px-4">
-        <div class="flex justify-center items-center">
+        <div class="flex flex-col justify-center items-center gap-4">
             <!-- Categories -->
             <div class="flex flex-wrap gap-2 mb-4 md:mb-0 justify-center md:justify-start">
                 <a href="{% url 'dashboard:stories' %}"
@@ -55,12 +55,12 @@
 
             <!-- Tags -->
             {% if selected_tag %}
-            <div class="flex items-center gap-2 mt-4">
-                <span class="text-sm text-gray-600 dark:text-dark-text-secondary">Selected tag:</span>
+            <div class="flex items-center gap-3 bg-orange-50 dark:bg-dark-bg p-3 rounded-lg border border-orange-200 dark:border-dark-border">
+                <span class="text-sm font-medium text-orange-700 dark:text-dark-text">चुना गया टैग:</span>
                 <a href="{% url 'dashboard:stories' %}{% if selected_category %}?category={{ selected_category }}{% endif %}"
-                   class="inline-flex items-center gap-1 px-3 py-1 bg-orange-600 dark:bg-dark-accent text-white text-sm font-medium rounded-full hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
-                    #{{ selected_tag }}
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white text-sm font-medium rounded-full hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition-all duration-300 shadow-sm">
+                    <span class="text-orange-200">#</span>{{ selected_tag }}
+                    <svg class="w-4 h-4 hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </a>
