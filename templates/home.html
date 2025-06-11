@@ -3,9 +3,9 @@
 {% block content %}
 
 <!-- Message Container -->
-<div id="message-container" class="fixed top-20 md:left-4 right-4 z-50" style="display: none;">
+<div id="message-container" class="fixed top-20 right-4 z-50 ml-3" style="display: none;">
     {% if messages %}
-    <div id="message-box" class="bg-white dark:bg-dark-card shadow-lg rounded-lg p-4 mb-4 transform transition-all duration-300 ease-in-out">
+    <div id="message-box" class="bg-white dark:bg-dark-card shadow-lg rounded-lg p-4 mb-4 transform transition-all duration-300 ease-in-out max-w-fit">
         {% for message in messages %}
         <div class="flex items-center">
             <div class="flex-shrink-0">
