@@ -64,6 +64,31 @@
 </style>
 
 <section class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Breadcrumb Navigation -->
+    <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li>
+                <a href="{% url 'dashboard:stories' %}" class="text-orange-600 dark:text-dark-accent hover:text-orange-700 dark:hover:text-dark-accent-hover transition duration-300">
+                    कहानियाँ
+                </a>
+            </li>
+            <li class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <a href="{% url 'dashboard:stories' %}?category={{ story.category }}" class="text-orange-600 dark:text-dark-accent hover:text-orange-700 dark:hover:text-dark-accent-hover transition duration-300">
+                    {{ story.category }}
+                </a>
+            </li>
+            <li class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-gray-400 dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <span class="text-gray-600 dark:text-dark-text-secondary truncate max-w-[200px]">{{ story.title }}</span>
+            </li>
+        </ol>
+    </nav>
+
     <div class="bg-white dark:bg-dark-card shadow-lg rounded-2xl overflow-hidden transition-colors duration-300">
         <!-- Story Image -->
         <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-96 object-cover">
