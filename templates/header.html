@@ -23,8 +23,20 @@
                 <!-- Logo/Site Name -->
                 <div class="text-2xl font-bold">हवस की दुनिया</div>
                 
+                <!-- Search Bar -->
+                <div class="hidden lg:flex flex-1 max-w-md mx-8">
+                    <form method="GET" class="w-full">
+                        <div class="relative">
+                            <input type="text" name="q" placeholder="कहानी खोजें..." class="w-full px-4 py-2 rounded-lg bg-white/10 dark:bg-dark-card/50 text-white placeholder-orange-200/70 dark:placeholder-dark-text/70 focus:outline-none focus:ring-2 focus:ring-orange-400 dark:focus:ring-dark-accent border border-orange-500/30 dark:border-dark-border">
+                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-orange-200 hover:text-white dark:text-dark-text/70 dark:hover:text-white transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
                 <!-- Desktop Navigation -->
-                <nav class="hidden md:flex items-center space-x-8">
+                <nav class="hidden lg:flex items-center space-x-8">
                     <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
                     <a href="{% url 'dashboard:contact' %}" class="hover:text-orange-200 transition duration-300">संपर्क करें</a>
@@ -58,7 +70,7 @@
                 </nav>
                 
                 <!-- Mobile Toggle Buttons -->
-                <div class="md:hidden flex items-center space-x-4">
+                <div class="lg:hidden flex items-center space-x-4">
                     <!-- Dark Mode Toggle Button for Mobile -->
                     <button id="dark-mode-toggle-mobile" class="p-2 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent focus:outline-none">
                         <i class="fas fa-moon text-xl theme-icon-moon"></i>
@@ -73,7 +85,18 @@
             </div>
             
             <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="md:hidden hidden pb-4">
+            <div id="mobile-menu" class="lg:hidden hidden pb-4">
+                <!-- Mobile Search Bar -->
+                <div class="mb-4">
+                    <form method="GET" class="w-full">
+                        <div class="relative">
+                            <input type="text" name="q" placeholder="कहानी खोजें..." class="w-full px-4 py-2 rounded-lg bg-white/10 dark:bg-dark-card/50 text-white placeholder-orange-200/70 dark:placeholder-dark-text/70 focus:outline-none focus:ring-2 focus:ring-orange-400 dark:focus:ring-dark-accent border border-orange-500/30 dark:border-dark-border">
+                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-orange-200 hover:text-white dark:text-dark-text/70 dark:hover:text-white transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 <nav class="flex flex-col space-y-4">
                     <a href="{% url 'dashboard:home' %}" class="hover:text-orange-200 transition duration-300">मुख्य पृष्ठ</a>
                     <a href="{% url 'dashboard:stories' %}" class="hover:text-orange-200 transition duration-300">लोकप्रिय कहानियाँ</a>
