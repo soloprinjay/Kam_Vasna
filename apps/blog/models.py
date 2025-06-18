@@ -7,6 +7,7 @@ from hitcount.models import HitCount
 from django.contrib.contenttypes.fields import GenericRelation
 from apps.users.models import CustomUser
 import re
+from django.utils import timezone
 
 
 # Create your models here.
@@ -30,12 +31,25 @@ class Post(models.Model):
     tags = TaggableManager()
     likes = models.IntegerField(default=0)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
-
+    trending_score = models.FloatField(default=0.0)  # Score to determine trending status
+    is_trending = models.BooleanField(default=False)  # Flag to mark trending stories
 
     def save(self, *args, **kwargs):
         if not self.slug:
             clean_title = re.sub(r'[^a-zA-Z0-9\s-]', '', self.title)  # Remove special characters
             self.slug = slugify(clean_title)  # Convert title to slug
+        
+        # Calculate trending score based on views, likes, and recency
+        views = self.hit_count_generic.first().hits if self.hit_count_generic.first() else 0
+        likes = self.likes
+        hours_since_creation = (timezone.now() - self.created_on).total_seconds() / 3600
+        
+        # Trending score formula: (views + likes * 2) / (hours_since_creation + 2)^1.5
+        self.trending_score = (views + likes * 2) / ((hours_since_creation + 2) ** 1.5)
+        
+        # Mark as trending if score is above threshold
+        self.is_trending = self.trending_score > 10.0
+        
         super().save(*args, **kwargs)
 
     def __str__(self):
