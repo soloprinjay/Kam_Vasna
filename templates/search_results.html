@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Search Header -->
+<section
+        class="relative bg-gradient-to-r from-orange-600 to-amber-500 dark:from-dark-accent dark:to-dark-accent-hover text-white py-16 md:py-20 transition-colors duration-300">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                {% if search_query %}
+                "{{ search_query }}" के लिए खोज परिणाम
+                {% else %}
+                कहानियाँ खोजें
+                {% endif %}
+            </h1>
+            {% if total_results > 0 %}
+            <p class="text-xl text-amber-100">{{ total_results }} परिणाम मिले</p>
+            {% else %}
+            <p class="text-xl text-amber-100">कोई परिणाम नहीं मिला</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Search Form -->
+<section class="py-8 bg-white dark:bg-dark-card shadow-md transition-colors duration-300">
+    <div class="container mx-auto px-4">
+        <form method="GET" action="{% url 'blog:search' %}" class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Search Input -->
+                <div class="md:col-span-2">
+                    <div class="relative">
+                        <input type="text"
+                               name="q"
+                               value="{{ search_query }}"
+                               placeholder="कहानी, श्रेणी या टैग खोजें..."
+                               class="w-full px-4 py-3 rounded-lg border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent">
+                        <button type="submit"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-orange-600 dark:text-dark-accent hover:text-orange-700 dark:hover:text-dark-accent-hover">
+                            <i class="fas fa-search text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Search Suggestions -->
+{% if search_suggestions and search_query %}
+<section class="py-4 bg-orange-50 dark:bg-dark-bg transition-colors duration-300">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-lg font-semibold text-orange-800 dark:text-dark-text mb-3">खोज सुझाव:</h3>
+            <div class="flex flex-wrap gap-2">
+                {% if search_suggestions.titles %}
+                {% for title in search_suggestions.titles %}
+                <a href="{% url 'blog:search' %}?q={{ title|urlencode }}"
+                   class="inline-block bg-orange-100 dark:bg-dark-card text-orange-800 dark:text-dark-text text-sm px-3 py-1 rounded-full hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                    {{ title }}
+                </a>
+                {% endfor %}
+                {% endif %}
+
+                {% if search_suggestions.categories %}
+                {% for category in search_suggestions.categories %}
+                <a href="{% url 'blog:search' %}?q={{ search_query }}&category={{ category|urlencode }}"
+                   class="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition duration-300">
+                    {{ category }}
+                </a>
+                {% endfor %}
+                {% endif %}
+
+                {% if search_suggestions.tags %}
+                {% for tag in search_suggestions.tags %}
+                <a href="{% url 'blog:search' %}?q={{ search_query }}&tag={{ tag|urlencode }}"
+                   class="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm px-3 py-1 rounded-full hover:bg-green-200 dark:hover:bg-green-900/50 transition duration-300">
+                    #{{ tag }}
+                </a>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Tag Filters -->
+{% if all_tags %}
+<section class="py-4 bg-gray-50 dark:bg-dark-bg transition-colors duration-300">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-dark-text mb-3">टैग फ़िल्टर:</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for tag in all_tags %}
+                <a href="{% url 'blog:search' %}?q={{ search_query }}{% if selected_category %}&category={{ selected_category }}{% endif %}&tag={{ tag|urlencode }}"
+                   class="inline-block bg-gray-100 dark:bg-dark-card text-gray-700 dark:text-dark-text text-sm px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-dark-accent transition duration-300
+                              {% if selected_tag == tag %}bg-orange-600 dark:bg-dark-accent text-white{% endif %}">
+                    #{{ tag }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Search Results -->
+<main class="py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            {% if has_results %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for story in stories %}
+                <div class="bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <div class="relative">
+                        {% if story.image %}
+                        <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-full h-56 object-cover">
+                        {% else %}
+                        <div class="w-full h-56 bg-gradient-to-br from-orange-100 to-amber-100 dark:from-dark-accent/20 dark:to-dark-accent-hover/20 flex items-center justify-center">
+                            <i class="fas fa-book text-4xl text-orange-600 dark:text-dark-accent"></i>
+                        </div>
+                        {% endif %}
+                        <div class="absolute top-4 right-4 flex gap-2">
+                            {% if story.is_trending %}
+                            <div class="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                                <i class="fas fa-fire"></i>
+                                ट्रेंडिंग
+                            </div>
+                            {% endif %}
+                            <div class="bg-orange-600 dark:bg-dark-accent text-white text-sm font-bold px-3 py-1 rounded-full">
+                                {{ story.category }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ story.title }}</h3>
+                        <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
+                            {{ story.description|safe|truncatewords:25 }}
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for tag in story.tags.all %}
+                            <a href="{% url 'blog:search' %}?q={{ search_query }}{% if selected_category %}&category={{ selected_category }}{% endif %}&tag={{ tag.name|urlencode }}"
+                               class="inline-block bg-orange-100 dark:bg-dark-bg text-orange-800 dark:text-dark-text text-xs font-medium px-2 py-1 rounded-full hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                                #{{ tag.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Story Stats -->
+                        <div class="flex items-center justify-between text-sm text-gray-500 dark:text-dark-text-secondary mb-4">
+                            <div class="flex items-center space-x-4">
+                                    <span class="flex items-center space-x-1">
+                                        <i class="fas fa-eye"></i>
+                                        <span>{{ story.hit_count_generic.first.hits|default:0 }}</span>
+                                    </span>
+                                <span class="flex items-center space-x-1">
+                                        <i class="fas fa-heart"></i>
+                                        <span>{{ story.likes|default:0 }}</span>
+                                    </span>
+                            </div>
+                            <span class="text-xs">{{ story.created_on|date:"M d, Y" }}</span>
+                        </div>
+
+                        <a href="{% url 'blog:story_detail' slug=story.slug %}"
+                           class="block w-full bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
+                            पूरी कहानी पढ़ें
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if stories.has_other_pages %}
+            <div class="mt-12 flex justify-center">
+                <div class="flex space-x-2">
+                    {% if stories.has_previous %}
+                    <a href="?q={{ search_query }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}&sort={{ sort_by }}&page={{ stories.previous_page_number }}"
+                       class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
+                        पिछला
+                    </a>
+                    {% endif %}
+
+                    {% for num in stories.paginator.page_range %}
+                    {% if stories.number == num %}
+                    <span class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded">{{ num }}</span>
+                    {% elif num > stories.number|add:'-3' and num < stories.number|add:'3' %}
+                    <a href="?q={{ search_query }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}&sort={{ sort_by }}&page={{ num }}"
+                       class="px-4 py-2 bg-orange-100 dark:bg-dark-card text-orange-800 dark:text-dark-text rounded hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if stories.has_next %}
+                    <a href="?q={{ search_query }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}&sort={{ sort_by }}&page={{ stories.next_page_number }}"
+                       class="px-4 py-2 bg-orange-600 dark:bg-dark-accent text-white rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
+                        अगला
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <!-- No Results -->
+            <div class="text-center py-16">
+                <div class="mb-8">
+                    <i class="fas fa-search text-6xl text-gray-400 dark:text-dark-text-secondary mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-dark-text mb-4">
+                        कोई परिणाम नहीं मिला
+                    </h2>
+                    <p class="text-gray-600 dark:text-dark-text-secondary mb-8">
+                        "{{ search_query }}" के लिए कोई कहानी नहीं मिली। कृपया अलग कीवर्ड्स आज़माएं।
+                    </p>
+                </div>
+
+                <!-- Search Suggestions -->
+                <div class="max-w-md mx-auto">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-dark-text mb-4">खोज सुझाव:</h3>
+                    <div class="space-y-2">
+                        <a href="{% url 'dashboard:stories' %}"
+                           class="block w-full bg-orange-600 dark:bg-dark-accent text-white py-3 px-6 rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition duration-300">
+                            सभी कहानियाँ देखें
+                        </a>
+                        <a href="{% url 'dashboard:stories' %}?trending=true"
+                           class="block w-full bg-orange-100 dark:bg-dark-card text-orange-800 dark:text-dark-text py-3 px-6 rounded-lg hover:bg-orange-200 dark:hover:bg-dark-accent transition duration-300">
+                            ट्रेंडिंग कहानियाँ देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+
+{% endblock %} 

@@ -1,0 +1,29 @@
+<!-- Rating Display -->
+<div class="rating-display">
+    <div class="average-rating">
+        <span id="average-rating">{{ post.ratings.average|default:"0.0"|floatformat:1 }}</span>
+        <span class="rating-count">(<span id="rating-count">{{ post.ratings.count|default:"0" }}</span> ratings)</span>
+    </div>
+    <div class="user-rating">
+        <div class="user-rating-stars">
+            {% for i in "12345" %}
+            <span class="user-rating-star {% if user_rating >= forloop.counter %}active{% endif %}">★</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Rating Input -->
+<div class="rating-input">
+    <div class="rating-stars">
+        {% for i in "12345" %}
+        <span class="rating-star" data-rating="{{ forloop.counter }}">★</span>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add JavaScript variables -->
+<script>
+    const postId = "{{ post.id }}";
+    const userId = "{{ request.user.id }}";
+</script> 
