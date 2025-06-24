@@ -291,7 +291,7 @@
             <p class="text-lg text-gray-600 dark:text-dark-text-secondary mb-8">
                 हमारे न्यूज़लेटर में शामिल हों और नई कहानियों के बारे में सबसे पहले जानें।
             </p>
-            <form method="POST" action="{% url 'dashboard:subscription' %}" class="max-w-md mx-auto">
+            <form method="POST" action="{% url 'dashboard:subscription' %}" class="max-w-lg mx-auto">
                 {% csrf_token %}
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="email" name="email" placeholder="आपका ईमेल पता" required
