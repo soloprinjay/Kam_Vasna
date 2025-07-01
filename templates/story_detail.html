@@ -70,6 +70,9 @@
         box-shadow: 0 2px 8px 0 rgba(251, 146, 60, 0.08);
         display: inline-block;
         margin-bottom: 2rem;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     .dark .breadcrumb-container {
         background: #1e1e1e; /* dark card */
@@ -81,6 +84,8 @@
         gap: 0.25rem;
         font-size: 0.7rem;
         font-weight: 500;
+        white-space: nowrap;
+        flex-wrap: nowrap;
     }
     .breadcrumb-link {
         color: #ea580c;
@@ -117,12 +122,27 @@
         color: #ea580c;
         font-weight: bold;
         background: #ffedd5;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: bottom;
         border-radius: 0.375rem;
         padding: 0.15rem 0.5rem;
     }
     .dark .breadcrumb-current {
         color: #ff7043;
         background: #232323;
+    }
+    @media (max-width: 640px) {
+        .breadcrumb-container {
+            padding: 0.25rem 0.25rem;
+            font-size: 0.8rem;
+        }
+        .breadcrumb-current {
+            max-width: 70px;
+        }
     }
 </style>
 
@@ -267,8 +287,7 @@
                     </div>
                     <div class="p-6 flex-grow flex flex-col justify-between">
                         <div class="w-full">
-                            <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ recent_post.title
-                                }}</h3>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-dark-text mb-3">{{ recent_post.title }}</h3>
                             <div class="prose prose-sm text-gray-600 dark:text-dark-text-secondary dark:prose-invert mb-4 max-w-none">
                                 {{ recent_post.description|safe|truncatewords:30 }}
                             </div>
@@ -367,8 +386,7 @@
                         <!-- Comment Content -->
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">{{
-                                    comment.user.get_full_name|default:comment.user.email }}</h3>
+                                <h3 class="font-semibold text-orange-800 dark:text-dark-text">{{ comment.user.get_full_name|default:comment.user.email }}</h3>
                                 <span class="text-sm text-gray-500 dark:text-dark-text-secondary">{{ comment.timestamp|timesince }} पहले</span>
                             </div>
 

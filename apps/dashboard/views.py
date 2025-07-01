@@ -44,3 +44,7 @@ class UserSubscription(View):
             messages.error(request, "Please enter a valid email address.")
 
         return redirect('dashboard:stories')
+
+class PrivacyPolicyView(View):
+    def get(self, request):
+        return render(request, 'privacy_policy.html')
