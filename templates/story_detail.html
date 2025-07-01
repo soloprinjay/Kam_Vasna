@@ -357,6 +357,7 @@
                             class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
                             rows="4"
                             placeholder="अपनी टिप्पणी लिखें... (Use @ to mention users)"
+                            required
                     ></textarea>
                     <div id="mention-suggestions" class="mention-suggestions"></div>
                 </div>
@@ -670,22 +671,27 @@
 
         // Add comment form submission handler
         commentForm.addEventListener('submit', function(e) {
+            // Prevent empty or whitespace-only comments
+            if (!commentBody.value.trim()) {
+                e.preventDefault();
+                commentBody.focus();
+                commentBody.classList.add('border-red-500');
+                return;
+            } else {
+                commentBody.classList.remove('border-red-500');
+            }
             e.preventDefault();
-            
             const userId = '{{ request.user.id }}';
             if (!userId || userId === 'None') {
                 window.location = "{% url 'users:login-user' %}";
                 return;
             }
-
             const commentData = {
                 action: 'new_comment',
                 user_id: userId,
                 body: commentBody.value
             };
-
             socket.send(JSON.stringify(commentData));
-            
             // Clear the form
             commentBody.value = '';
         });
