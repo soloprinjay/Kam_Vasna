@@ -54,6 +54,10 @@ CHANNEL_LAYERS = {
     },
 }
 
+ACCOUNT_ADAPTER = 'apps.users.adapters.MyAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',

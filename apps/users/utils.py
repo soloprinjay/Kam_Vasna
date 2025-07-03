@@ -32,3 +32,18 @@ def set_random_password_and_send_email(user,request):
         fail_silently=False,
         html_message=html_message
     )
+
+def send_password_reset_link_email(user, reset_url):
+    subject = "पासवर्ड रीसेट लिंक"
+    html_message = render_to_string('email/password_reset_link_email.html', {
+        'user': user,
+        'reset_url': reset_url
+    })
+    send_mail(
+        subject=subject,
+        message=f"पासवर्ड रीसेट करने के लिए यह लिंक खोलें: {reset_url}",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[user.email],
+        fail_silently=False,
+        html_message=html_message
+    )

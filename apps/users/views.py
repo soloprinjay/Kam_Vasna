@@ -11,6 +11,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.db.models import Q
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 from apps.users.models import CustomUser
 
@@ -87,10 +93,89 @@ class ForgotPasswordView(View):
     def get(self, request):
         return render(request, 'forgot_password.html')
 
+    def post(self, request):
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = request.build_absolute_uri(
+                f"/users/reset-password/?uid={uid}&token={token}"
+            )
+            # Render email template
+            subject = "पासवर्ड रीसेट लिंक"
+            html_message = render_to_string('email/password_reset_link_email.html', {
+                'user': user,
+                'reset_url': reset_url
+            })
+            send_mail(
+                subject=subject,
+                message=f"पासवर्ड रीसेट करने के लिए यह लिंक खोलें: {reset_url}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[user.email],
+                fail_silently=False,
+                html_message=html_message
+            )
+            messages.success(request, 'पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।')
+        else:
+            messages.error(request, 'यह ईमेल हमारे रिकॉर्ड में नहीं है।')
+        return render(request, 'forgot_password.html')
 
 class ResetPasswordView(View):
     def get(self, request):
-        return render(request, 'reset_password.html')
+        uidb64 = request.GET.get('uid')
+        token = request.GET.get('token')
+        context = {'validlink': False}
+        if uidb64 and token:
+            try:
+                uid = force_str(urlsafe_base64_decode(uidb64))
+                user = User.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+                user = None
+            token_generator = PasswordResetTokenGenerator()
+            if user and token_generator.check_token(user, token):
+                context['validlink'] = True
+                context['uid'] = uidb64
+                context['token'] = token
+        return render(request, 'reset_password.html', context)
+
+    def post(self, request):
+        uidb64 = request.POST.get('uid')
+        token = request.POST.get('token')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm-password')
+        context = {'validlink': False}
+        if not (uidb64 and token):
+            messages.error(request, 'लिंक अमान्य है।')
+            return render(request, 'reset_password.html', context)
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        token_generator = PasswordResetTokenGenerator()
+        if user and token_generator.check_token(user, token):
+            if not password or not confirm_password:
+                messages.error(request, 'कृपया सभी फ़ील्ड भरें।')
+                context['validlink'] = True
+                context['uid'] = uidb64
+                context['token'] = token
+                return render(request, 'reset_password.html', context)
+            if password != confirm_password:
+                messages.error(request, 'पासवर्ड मेल नहीं खा रहे हैं।')
+                context['validlink'] = True
+                context['uid'] = uidb64
+                context['token'] = token
+                return render(request, 'reset_password.html', context)
+            user.set_password(password)
+            user.has_set_password = True
+            user.save()
+            messages.success(request, 'पासवर्ड सफलतापूर्वक बदल दिया गया है। अब आप लॉगिन कर सकते हैं।')
+            return redirect('users:login-user')
+        else:
+            messages.error(request, 'लिंक अमान्य या समाप्त हो गया है।')
+        return render(request, 'reset_password.html', context)
 
 class ChangePasswordView(View):
     def get(self, request):
