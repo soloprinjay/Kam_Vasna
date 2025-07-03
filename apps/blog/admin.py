@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Category, Post, Comment
 
 
@@ -29,4 +30,3 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('body', 'user__email', 'post__title')
     readonly_fields = ('timestamp',)
     raw_id_fields = ('user', 'post')
-

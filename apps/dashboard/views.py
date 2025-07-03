@@ -1,10 +1,12 @@
 import json
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from django.views import View
-from apps.dashboard.models import Contact, Subscription
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.views import View
+from django.views.generic import TemplateView
+
+from apps.dashboard.models import Contact, Subscription
+
 
 # Create your views here.
 
@@ -44,6 +46,7 @@ class UserSubscription(View):
             messages.error(request, "Please enter a valid email address.")
 
         return redirect('dashboard:stories')
+
 
 class PrivacyPolicyView(View):
     def get(self, request):

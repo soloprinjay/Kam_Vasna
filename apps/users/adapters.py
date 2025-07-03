@@ -1,7 +1,8 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.exceptions import ImmediateHttpResponse
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.contrib.auth import get_user_model
+
 
 class MyAccountAdapter(DefaultAccountAdapter):
     pass  # You can customize this if needed.

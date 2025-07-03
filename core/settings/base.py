@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 ALLOWED_HOSTS.append('*')  # For development only, remove in production
@@ -57,7 +57,6 @@ CHANNEL_LAYERS = {
 ACCOUNT_ADAPTER = 'apps.users.adapters.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'apps.users.adapters.MySocialAccountAdapter'
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -84,8 +83,8 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': os.getenv('FACEBOOK_CLIENT_ID'),
             'secret': os.getenv('FACEBOOK_SECRET_KEY'),
         },
-        'AUTH_PARAMS' : {
-             'auth_type' : 'reauthenticate'
+        'AUTH_PARAMS': {
+            'auth_type': 'reauthenticate'
         }
     }
 }

@@ -1,6 +1,7 @@
-from django.dispatch import receiver
-from django.contrib.auth.signals import user_logged_in
 from allauth.socialaccount.signals import social_account_added
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+
 from apps.users.utils import set_random_password_and_send_email
 
 

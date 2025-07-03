@@ -10,8 +10,8 @@ import os
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.base')
 
-
 from dotenv import load_dotenv
+
 load_dotenv()
 import django
 
@@ -25,7 +25,6 @@ django.setup()
 from apps.blog.routing import websocket_urlpatterns
 
 django_asgi_app = get_asgi_application()
-
 
 # <-- And this one
 

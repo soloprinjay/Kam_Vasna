@@ -1,26 +1,27 @@
 import json
-from django.shortcuts import render, redirect
-from django.views import View
-from django.contrib.auth import logout
-from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.contrib.auth import update_session_auth_hash
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user_model
+from django.contrib.auth import logout
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
-from django.contrib import messages
-from django.db.models import Q
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
-from django.conf import settings
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.views import View
 
 from apps.users.models import CustomUser
 
 User = get_user_model()
+
 
 # Create your views here.
 
@@ -64,7 +65,6 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request):
         return render(request, 'login.html')
-
 
     def post(self, request):
         body = json.loads(request.body)
@@ -122,6 +122,7 @@ class ForgotPasswordView(View):
             messages.error(request, 'यह ईमेल हमारे रिकॉर्ड में नहीं है।')
         return render(request, 'forgot_password.html')
 
+
 class ResetPasswordView(View):
     def get(self, request):
         uidb64 = request.GET.get('uid')
@@ -177,6 +178,7 @@ class ResetPasswordView(View):
             messages.error(request, 'लिंक अमान्य या समाप्त हो गया है।')
         return render(request, 'reset_password.html', context)
 
+
 class ChangePasswordView(View):
     def get(self, request):
         return render(request, 'change_password.html')
@@ -205,7 +207,6 @@ class ChangePasswordView(View):
         return JsonResponse({'message': 'Invalid request.'}, status=400)
 
 
-
 def logout_view(request):
     logout(request)
     return redirect('users:login-user')
@@ -218,6 +219,7 @@ def post_login_redirect(request):
         messages.success(request, "Please check your email, we have sent you your new password")
         return redirect('/')
     return redirect('/')  # or wherever you want users to go normally
+
 
 def user_suggestions(request):
     query = request.GET.get('q', '')
@@ -240,6 +242,7 @@ def user_suggestions(request):
 
     return JsonResponse({'users': suggestions})
 
+
 class UpdateProfileView(View):
     def get(self, request):
         return render(request, 'update_profile.html')
@@ -260,14 +263,3 @@ class UpdateProfileView(View):
 
         messages.success(request, 'Your profile has been updated successfully.')
         return redirect('users:update_profile')  # Use your appropriate URL name
-
-
-
-
-
-
-
-
-
-
-

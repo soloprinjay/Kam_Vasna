@@ -1,11 +1,10 @@
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.db.models import Q
 from hitcount.utils import get_hitcount_model
 from hitcount.views import HitCountMixin
-
 
 from .models import Post, Category
 
@@ -54,13 +53,13 @@ class StoriesView(View):
         page_obj = paginator.get_page(page_number)
 
         categories = Category.objects.all()
-        
+
         # Get all tags for search suggestions
         all_tags = []
         for story in Post.objects.all():
             all_tags.extend([tag.name for tag in story.tags.all()])
         all_tags = list(set(all_tags))  # Remove duplicates
-        
+
         return render(request, 'stories.html', {
             'stories': page_obj,
             'categories': categories,
@@ -75,7 +74,7 @@ class StoriesView(View):
 
 class SearchView(View):
     """Advanced search view with multiple filters and sorting options"""
-    
+
     def get(self, request):
         # Get search parameters
         search_query = request.GET.get('q', '').strip()
@@ -83,9 +82,9 @@ class SearchView(View):
         tag = request.GET.get('tag')
         sort_by = request.GET.get('sort', 'newest')  # newest, oldest, popular, trending
         page_number = request.GET.get('page', 1)
-        
+
         stories = Post.objects.all()
-        
+
         # Apply search filter
         if search_query:
             stories = stories.filter(
@@ -94,15 +93,15 @@ class SearchView(View):
                 Q(category__name__icontains=search_query) |
                 Q(tags__name__icontains=search_query)
             ).distinct()
-        
+
         # Apply category filter
         if category:
             stories = stories.filter(category__name=category)
-        
+
         # Apply tag filter
         if tag:
             stories = stories.filter(tags__name=tag)
-        
+
         # Apply sorting
         if sort_by == 'oldest':
             stories = stories.order_by('created_on')
@@ -112,18 +111,18 @@ class SearchView(View):
             stories = stories.filter(is_trending=True).order_by('-trending_score')
         else:  # newest (default)
             stories = stories.order_by('-created_on')
-        
+
         # Pagination
         paginator = Paginator(stories, 6)  # Show 6 stories per page for search results
         page_obj = paginator.get_page(page_number)
-        
+
         # Get all categories and tags for filters
         categories = Category.objects.all()
         all_tags = []
         for story in Post.objects.all():
             all_tags.extend([tag.name for tag in story.tags.all()])
         all_tags = list(set(all_tags))
-        
+
         # Get search suggestions based on current query
         search_suggestions = []
         if search_query:
@@ -131,21 +130,21 @@ class SearchView(View):
             title_suggestions = Post.objects.filter(
                 title__icontains=search_query
             ).values_list('title', flat=True)[:5]
-            
+
             # Get category suggestions
             category_suggestions = Category.objects.filter(
                 name__icontains=search_query
             ).values_list('name', flat=True)[:3]
-            
+
             # Get tag suggestions
             tag_suggestions = [tag for tag in all_tags if search_query.lower() in tag.lower()][:3]
-            
+
             search_suggestions = {
                 'titles': title_suggestions,
                 'categories': category_suggestions,
                 'tags': tag_suggestions
             }
-        
+
         return render(request, 'search_results.html', {
             'stories': page_obj,
             'categories': categories,
@@ -162,51 +161,51 @@ class SearchView(View):
 
 class SearchSuggestionsView(View):
     """API view for search suggestions"""
-    
+
     def get(self, request):
         query = request.GET.get('q', '').strip()
-        
+
         if not query or len(query) < 2:
             return JsonResponse({'suggestions': []})
-        
+
         suggestions = []
-        
+
         # Get title suggestions
         title_suggestions = Post.objects.filter(
             title__icontains=query
         ).values_list('title', flat=True)[:3]
-        
+
         for title in title_suggestions:
             suggestions.append({
                 'type': 'title',
                 'text': title
             })
-        
+
         # Get category suggestions
         category_suggestions = Category.objects.filter(
             name__icontains=query
         ).values_list('name', flat=True)[:2]
-        
+
         for category in category_suggestions:
             suggestions.append({
                 'type': 'category',
                 'text': category
             })
-        
+
         # Get tag suggestions
         all_tags = []
         for story in Post.objects.all():
             all_tags.extend([tag.name for tag in story.tags.all()])
         all_tags = list(set(all_tags))
-        
+
         tag_suggestions = [tag for tag in all_tags if query.lower() in tag.lower()][:2]
-        
+
         for tag in tag_suggestions:
             suggestions.append({
                 'type': 'tag',
                 'text': f'#{tag}'
             })
-        
+
         return JsonResponse({
             'suggestions': suggestions[:8]  # Limit to 8 suggestions total
         })

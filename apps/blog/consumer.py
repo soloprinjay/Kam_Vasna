@@ -2,17 +2,18 @@ import json
 import re
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.utils import timezone
 from star_ratings.models import Rating, UserRating
-from django.contrib import auth
-from django.db import models
 
 from .models import Comment, Post
 
 
-class CommentConsumer(AsyncWebsocketConsumer):
+class CommentConsumer(LoginRequiredMixin, AsyncWebsocketConsumer):
     async def connect(self):
         self.post_id = self.scope['url_route']['kwargs']['post_id']
         self.room_group_name = f'comments_{self.post_id}'
@@ -202,22 +203,22 @@ class CommentConsumer(AsyncWebsocketConsumer):
         """Process @ mentions in the comment text and return list of mentioned users"""
         User = get_user_model()
         mentioned_users = []
-        
+
         # Find all @mentions in the text
         mentions = re.findall(r'@([^@\s]+)', text)
-        
+
         for mention in mentions:
             try:
                 # Try to find user by full_name or email
                 user = User.objects.filter(
-                    models.Q(full_name__iexact=mention) | 
+                    models.Q(full_name__iexact=mention) |
                     models.Q(email__iexact=mention)
                 ).first()
                 if user:
                     mentioned_users.append(user)
             except User.DoesNotExist:
                 continue
-                
+
         return mentioned_users
 
     @database_sync_to_async
