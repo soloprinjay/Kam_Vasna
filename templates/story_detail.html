@@ -386,9 +386,9 @@
 
                         <!-- Comment Content -->
                         <div class="flex-1">
-                            <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-start flex-col mb-2">
                                 <h3 class="font-semibold text-orange-800 dark:text-dark-text">{{ comment.user.get_full_name|default:comment.user.email }}</h3>
-                                <span class="text-sm text-gray-500 dark:text-dark-text-secondary">{{ comment.timestamp|timesince }} पहले</span>
+                                <span class="text-[12px] text-gray-500 dark:text-dark-text-secondary">{{ comment.timestamp|timesince }} पहले</span>
                             </div>
 
                             <p class="text-gray-600 dark:text-dark-text-secondary">{{ comment.body }}</p>

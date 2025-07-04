@@ -32,15 +32,10 @@ document.getElementById('contact-form').addEventListener('submit', function (eve
     })
     .then(response => response.json())
     .then(data => {
-        const alertDiv = document.getElementById('alert');
         if (data.status === 'success') {
-            alertDiv.classList.remove('hidden', 'bg-red-500');
-            alertDiv.classList.add('bg-green-500');
-            alertDiv.innerText = data.message;
+            showSuccess(data.message || 'hjghjghjghjghj');
         } else {
-            alertDiv.classList.remove('hidden', 'bg-green-500');
-            alertDiv.classList.add('bg-red-500');
-            alertDiv.innerText = data.message;
+            showError(data.message);
         }
     })
     .catch(error => {

@@ -22,13 +22,13 @@ document.getElementById('change-password-form').addEventListener('submit', async
     const data = await response.json();
 
     if (response.ok) {
-        alert(data.message || "Password changed successfully.");
-        window.location.href = "/";  // Redirect to dashboard:home
+        showSuccess(data.message || "पासवर्ड सफलतापूर्वक बदल दिया गया।");
+        setTimeout(() => {
+            window.location.href = "/";  // Redirect to dashboard:home
+        }, 1000);
     } else {
-        alert(data.error || "An error occurred. Please try again.");
+        showError(data.error || "एक त्रुटि हुई। कृपया पुनः प्रयास करें।");
     }
-
-    alert(data.message);
 });
 
 

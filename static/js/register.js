@@ -31,15 +31,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (data.success) {
-                alert(data.message);
-                window.location.href = '/users/login/'; // Redirect to login page after success (optional)
+                showSuccess(data.message);
+                setTimeout(() => {
+                    window.location.href = '/users/login/'; // Redirect to login page after success
+                }, 1000);
             } else {
-                alert(data.message); // Show error message
+                showError(data.message); // Show error message
             }
 
         } catch (error) {
             console.error('Error:', error);
-            alert('Something went wrong. Please try again later.');
+            showError('कुछ गलत हो गया। कृपया पुनः प्रयास करें।');
         }
     });
 });

@@ -45,13 +45,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (data.success) {
-                window.location.href = data.redirect_url;
+                showSuccess(data.message || 'लॉगिन सफल!');
+                setTimeout(() => {
+                    window.location.href = data.redirect_url;
+                }, 1000);
             } else {
-                alert(data.message || 'Login failed');
+                showError(data.message || 'लॉगिन असफल');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Something went wrong. Please try again.');
+            showError('कुछ गलत हो गया। कृपया पुनः प्रयास करें।');
         }
     });
 });
