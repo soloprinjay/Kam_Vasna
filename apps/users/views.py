@@ -191,6 +191,9 @@ class ChangePasswordView(View):
             new_password = data.get('new_password')
             confirm_password = data.get('confirm_password')
 
+            if old_password == new_password:
+                return JsonResponse({'message': 'नया पासवर्ड पुराने पासवर्ड जैसा नहीं हो सकता।'}, status=400)
+
             if not user.check_password(old_password):
                 return JsonResponse({'message': 'पुराना पासवर्ड गलत है।'}, status=400)
 

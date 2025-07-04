@@ -27,7 +27,7 @@ document.getElementById('change-password-form').addEventListener('submit', async
             window.location.href = "/";  // Redirect to dashboard:home
         }, 1000);
     } else {
-        showError(data.error || "एक त्रुटि हुई। कृपया पुनः प्रयास करें।");
+        showError(data.message || "एक त्रुटि हुई। कृपया पुनः प्रयास करें।");
     }
 });
 

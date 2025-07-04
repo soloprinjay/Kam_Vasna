@@ -2,9 +2,9 @@ import json
 import re
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.auth.models import AnonymousUser
 from django.contrib import auth
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
@@ -13,8 +13,13 @@ from star_ratings.models import Rating, UserRating
 from .models import Comment, Post
 
 
-class CommentConsumer(LoginRequiredMixin, AsyncWebsocketConsumer):
+class CommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+
+        if self.scope["user"] == AnonymousUser():
+            await self.close()
+            return
+
         self.post_id = self.scope['url_route']['kwargs']['post_id']
         self.room_group_name = f'comments_{self.post_id}'
 
