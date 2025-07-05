@@ -39,13 +39,13 @@ class RegisterView(View):
             terms_of_use = data.get('terms')
 
             if not all([full_name, email, password, confirm_password, terms_of_use]):
-                return JsonResponse({'success': False, 'message': 'All fields are required.'})
+                return JsonResponse({'success': False, 'message': 'सभी फ़ील्ड भरना आवश्यक है।'})
 
             if password != confirm_password:
-                return JsonResponse({'success': False, 'message': 'Passwords do not match.'})
+                return JsonResponse({'success': False, 'message': 'पासवर्ड मेल नहीं खा रहे हैं।'})
 
             if User.objects.filter(email=email).exists():
-                return JsonResponse({'success': False, 'message': 'Email is already registered.'})
+                return JsonResponse({'success': False, 'message': 'यह ईमेल पहले से पंजीकृत है।'})
 
             User.objects.create_user(
                 email=email,
@@ -54,12 +54,12 @@ class RegisterView(View):
                 terms_confirmed=terms_of_use
             )
 
-            return JsonResponse({'success': True, 'message': 'Registration successful.'})
+            return JsonResponse({'success': True, 'message': 'पंजीकरण सफलतापूर्वक पूरा हुआ।'})
 
         except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON.'})
+            return JsonResponse({'success': False, 'message': 'अमान्य JSON डेटा।'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
+            return JsonResponse({'success': False, 'message': 'एक त्रुटि हुई। कृपया पुनः प्रयास करें।'})
 
 
 class LoginView(View):
@@ -83,7 +83,7 @@ class LoginView(View):
             else:
                 request.session.set_expiry(0)
 
-            return JsonResponse({'success': True, 'redirect_url': '/'})  # Home page
+            return JsonResponse({'success': True, 'redirect_url': '/', 'message': 'आपका लॉगिन सफलतापूर्वक हुआ है।'})  # Home page
 
         else:
             return JsonResponse({'success': False, 'message': 'ईमेल या पासवर्ड गलत है।'})
@@ -94,7 +94,13 @@ class ForgotPasswordView(View):
         return render(request, 'forgot_password.html')
 
     def post(self, request):
-        email = request.POST.get('email')
+        # Check if it's a JSON request
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            email = data.get('email')
+        else:
+            email = request.POST.get('email')
+        
         user = User.objects.filter(email=email).first()
         if user:
             token_generator = PasswordResetTokenGenerator()
@@ -117,10 +123,9 @@ class ForgotPasswordView(View):
                 fail_silently=False,
                 html_message=html_message
             )
-            messages.success(request, 'पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।')
+            return JsonResponse({'success': True, 'message': 'पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।'})
         else:
-            messages.error(request, 'यह ईमेल हमारे रिकॉर्ड में नहीं है।')
-        return render(request, 'forgot_password.html')
+            return JsonResponse({'success': False, 'message': 'यह ईमेल हमारे रिकॉर्ड में नहीं है।'})
 
 
 class ResetPasswordView(View):
@@ -142,41 +147,42 @@ class ResetPasswordView(View):
         return render(request, 'reset_password.html', context)
 
     def post(self, request):
-        uidb64 = request.POST.get('uid')
-        token = request.POST.get('token')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm-password')
-        context = {'validlink': False}
+        # Check if it's a JSON request
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            uidb64 = data.get('uid')
+            token = data.get('token')
+            password = data.get('password')
+            confirm_password = data.get('confirm_password')
+        else:
+            uidb64 = request.POST.get('uid')
+            token = request.POST.get('token')
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm-password')
+        
         if not (uidb64 and token):
-            messages.error(request, 'लिंक अमान्य है।')
-            return render(request, 'reset_password.html', context)
+            return JsonResponse({'success': False, 'message': 'लिंक अमान्य है।'})
+        
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
+        
         token_generator = PasswordResetTokenGenerator()
         if user and token_generator.check_token(user, token):
             if not password or not confirm_password:
-                messages.error(request, 'कृपया सभी फ़ील्ड भरें।')
-                context['validlink'] = True
-                context['uid'] = uidb64
-                context['token'] = token
-                return render(request, 'reset_password.html', context)
+                return JsonResponse({'success': False, 'message': 'कृपया सभी फ़ील्ड भरें।'})
+            
             if password != confirm_password:
-                messages.error(request, 'पासवर्ड मेल नहीं खा रहे हैं।')
-                context['validlink'] = True
-                context['uid'] = uidb64
-                context['token'] = token
-                return render(request, 'reset_password.html', context)
+                return JsonResponse({'success': False, 'message': 'पासवर्ड मेल नहीं खा रहे हैं।'})
+            
             user.set_password(password)
             user.has_set_password = True
             user.save()
-            messages.success(request, 'पासवर्ड सफलतापूर्वक बदल दिया गया है। अब आप लॉगिन कर सकते हैं।')
-            return redirect('users:login-user')
+            return JsonResponse({'success': True, 'message': 'पासवर्ड सफलतापूर्वक बदल दिया गया है। अब आप लॉगिन कर सकते हैं।'})
         else:
-            messages.error(request, 'लिंक अमान्य या समाप्त हो गया है।')
-        return render(request, 'reset_password.html', context)
+            return JsonResponse({'success': False, 'message': 'लिंक अमान्य या समाप्त हो गया है।'})
 
 
 class ChangePasswordView(View):
@@ -248,18 +254,24 @@ class UpdateProfileView(View):
         return render(request, 'update_profile.html')
 
     def post(self, request):
-        user = request.user
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        email = request.POST.get('email', '').strip()
-        self_info = request.POST.get('bio', '').strip()
+        try:
+            user = request.user
+            first_name = request.POST.get('first_name', '').strip()
+            last_name = request.POST.get('last_name', '').strip()
+            email = request.POST.get('email', '').strip()
+            self_info = request.POST.get('bio', '').strip()
 
-        # Update user fields
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        user.self_info = self_info
-        user.save()
+            # Check if email is already taken by another user
+            if email != user.email and User.objects.filter(email=email).exists():
+                return JsonResponse({'success': False, 'message': 'यह ईमेल पहले से उपयोग में है।'})
 
-        messages.success(request, 'Your profile has been updated successfully.')
-        return redirect('users:update_profile')  # Use your appropriate URL name
+            # Update user fields
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.self_info = self_info
+            user.save()
+
+            return JsonResponse({'success': True, 'message': 'प्रोफाइल सफलतापूर्वक अपडेट किया गया।'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'प्रोफाइल अपडेट करने में त्रुटि हुई। कृपया पुनः प्रयास करें।'})
