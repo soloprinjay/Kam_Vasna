@@ -33,7 +33,11 @@ document.getElementById('contact-form').addEventListener('submit', function (eve
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            showSuccess(data.message || 'hjghjghjghjghj');
+            showSuccess(data.message);
+            document.getElementById('name').value = "";
+            document.getElementById('email').value = "";
+            document.getElementById('subject').value = "";
+            document.getElementById('message').value = "";
         } else {
             showError(data.message);
         }
