@@ -310,12 +310,12 @@
             <p class="text-lg text-gray-600 dark:text-dark-text-secondary mb-8">
                 हमारे न्यूज़लेटर में शामिल हों और नई कहानियों के बारे में सबसे पहले जानें।
             </p>
-            <form method="POST" action="{% url 'dashboard:subscription' %}" class="max-w-lg mx-auto">
+            <form method="POST" class="max-w-lg mx-auto" id="subscription-form">
                 {% csrf_token %}
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="email" name="email" placeholder="आपका ईमेल पता" required
+                    <input type="email" name="email" id="subscription-email" placeholder="आपका ईमेल पता" required
                            class="flex-1 px-4 py-3 rounded-lg border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent">
-                    <button type="submit"
+                    <button type="submit" id="subscription-submit"
                             class="bg-orange-600 dark:bg-dark-accent hover:bg-orange-700 dark:hover:bg-dark-accent-hover text-white font-bold py-3 px-8 rounded-lg transition duration-300">
                         सदस्यता लें
                     </button>
@@ -338,5 +338,55 @@
 </div>
 
 <script src="{% static 'js/link_copy.js' %}"></script>
+<script src="{% static 'js/message.js' %}"></script>
+<script>
+    // Subscription form AJAX handling
+    document.getElementById('subscription-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('subscription-email').value;
+        const submitButton = document.getElementById('subscription-submit');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Disable button and show loading state
+        submitButton.disabled = true;
+        submitButton.textContent = 'भेज रहे हैं...';
+        
+        try {
+            const response = await fetch("{% url 'dashboard:subscription' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    email: email,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.status === 'success') {
+                    showSuccess(data.message);
+                    document.getElementById('subscription-email').value = '';
+                } else if (data.status === 'info') {
+                    showInfo(data.message);
+                } else {
+                    showError(data.message);
+                }
+            } else {
+                showError(data.message || 'एक त्रुटि हुई। कृपया पुनः प्रयास करें।');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showError('एक त्रुटि हुई। कृपया पुनः प्रयास करें।');
+        } finally {
+            // Re-enable button and restore text
+            submitButton.disabled = false;
+            submitButton.textContent = 'सदस्यता लें';
+        }
+    });
+</script>
 
 {% endblock %}

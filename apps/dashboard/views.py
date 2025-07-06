@@ -1,5 +1,7 @@
 import json
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
@@ -34,18 +36,43 @@ class ContactView(View):
 
 class UserSubscription(View):
     def post(self, request):
-        email = request.POST.get('email')
-
-        if email:
-            if not Subscription.objects.filter(email=email).exists():
-                Subscription.objects.create(email=email)
-                messages.success(request, "Congratulations, you are now one of our members!")
-            else:
-                messages.info(request, "You're already subscribed with this email.")
+        if request.content_type == 'application/json':
+            try:
+                data = json.loads(request.body)
+                email = data.get('email')
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid JSON data.'
+                }, status=400)
         else:
-            messages.error(request, "Please enter a valid email address.")
+            email = request.POST.get('email')
 
-        return redirect('dashboard:stories')
+        if not email:
+            return JsonResponse({
+                'status': 'error',
+                'message': "Please enter a valid email address."
+            }, status=400)
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse({
+                'status': 'error',
+                'message': "Invalid email address."
+            }, status=400)
+
+        if Subscription.objects.filter(email=email).exists():
+            return JsonResponse({
+                'status': 'info',
+                'message': "You're already subscribed with this email."
+            }, status=200)
+
+        Subscription.objects.create(email=email)
+        return JsonResponse({
+            'status': 'success',
+            'message': "Congratulations, you are now one of our members!"
+        }, status=201)
 
 
 class PrivacyPolicyView(View):

@@ -71,7 +71,7 @@ function showMessage(message, type = 'info') {
                 messageContainer.remove();
             }
         }, 300);
-    }, 5000);
+    }, 7000);
 }
 
 // Convenience functions
