@@ -236,10 +236,15 @@ class StoryDetailView(View):
 
 class PostLikeView(View):
     def post(self, request, post_id):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Authentication required'}, status=401)
         try:
             post = Post.objects.get(id=post_id)
+            if post.liked_by.filter(id=request.user.id).exists():
+                return JsonResponse({'likes': post.likes, 'liked': True, 'error': 'Already liked'})
             post.likes += 1
+            post.liked_by.add(request.user)
             post.save()
-            return JsonResponse({'likes': post.likes})
+            return JsonResponse({'likes': post.likes, 'liked': True})
         except Post.DoesNotExist:
             return JsonResponse({'error': 'Post not found'}, status=404)

@@ -1,4 +1,5 @@
 import re
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils import timezone
@@ -7,6 +8,8 @@ from django_ckeditor_5.fields import CKEditor5Field
 from hitcount.models import HitCount
 from star_ratings.models import Rating
 from taggit.managers import TaggableManager
+
+User = get_user_model()
 
 from apps.users.models import CustomUser
 
@@ -31,6 +34,7 @@ class Post(models.Model):
     ratings = models.ForeignKey(Rating, on_delete=models.CASCADE, null=True, blank=True)
     tags = TaggableManager()
     likes = models.IntegerField(default=0)
+    liked_by = models.ManyToManyField('users.CustomUser', related_name='liked_posts', blank=True)
     hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk', related_query_name='hit_count')
     trending_score = models.FloatField(default=0.0)  # Score to determine trending status
     is_trending = models.BooleanField(default=False)  # Flag to mark trending stories
