@@ -1,5 +1,9 @@
 document.querySelectorAll('.like-btn').forEach(button => {
     button.addEventListener('click', function () {
+        if (this.classList.contains('liked')) {
+            // Already liked, do nothing
+            return;
+        }
         const postId = this.dataset.postId;
 
         fetch(`/blog/like/${postId}/`, {
@@ -9,12 +13,24 @@ document.querySelectorAll('.like-btn').forEach(button => {
                 'Content-Type': 'application/json'
             }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    window.location = '/users/login/';
+                    return null;
+                }
+                return res.json();
+            })
             .then(data => {
+                if (!data) return;
                 if (data.liked) {
                     this.classList.add('liked');
+                    this.disabled = true;
                 }
                 this.querySelector('.like-count').textContent = data.likes;
+                if (data.error === 'Already liked') {
+                    this.classList.add('liked');
+                    this.disabled = true;
+                }
             });
     });
 });
