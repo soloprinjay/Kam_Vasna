@@ -179,7 +179,7 @@ cython_debug/
 media/
 *.jpg
 *.jpeg
-*.png
+# *.png
 *.gif
 
 # IDE and OS files
