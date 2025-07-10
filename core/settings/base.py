@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'apps.dashboard',
     'apps.blog',
     'apps.users',
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'channels',
 ]
+
+SITE_ID = 1
 
 # Channel Layer Configuration
 CHANNEL_LAYERS = {
