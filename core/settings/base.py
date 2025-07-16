@@ -198,81 +198,61 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-customColorPalette = [
-    {
-        'color': 'hsl(4, 90%, 58%)',
-        'label': 'Red'
-    },
-    {
-        'color': 'hsl(340, 82%, 52%)',
-        'label': 'Pink'
-    },
-    {
-        'color': 'hsl(291, 64%, 42%)',
-        'label': 'Purple'
-    },
-    {
-        'color': 'hsl(262, 52%, 47%)',
-        'label': 'Deep Purple'
-    },
-    {
-        'color': 'hsl(231, 48%, 48%)',
-        'label': 'Indigo'
-    },
-    {
-        'color': 'hsl(207, 90%, 54%)',
-
-        'label': 'Blue'
-    },
+# Custom color palette for tables, fonts, etc.
+CUSTOM_COLOR_PALETTE = [
+    {'color': 'hsl(4, 90%, 58%)', 'label': 'Red'},
+    {'color': 'hsl(340, 82%, 52%)', 'label': 'Pink'},
+    {'color': 'hsl(291, 64%, 42%)', 'label': 'Purple'},
+    {'color': 'hsl(262, 52%, 47%)', 'label': 'Deep Purple'},
+    {'color': 'hsl(231, 48%, 48%)', 'label': 'Indigo'},
+    {'color': 'hsl(207, 90%, 54%)', 'label': 'Blue'},
+    {'color': 'hsl(187, 100%, 42%)', 'label': 'Teal'},
+    {'color': 'hsl(52, 100%, 62%)', 'label': 'Yellow'},
+    {'color': 'hsl(90, 70%, 40%)', 'label': 'Green'},
+    {'color': 'hsl(0, 0%, 0%)', 'label': 'Black'},
+    {'color': 'hsl(0, 0%, 100%)', 'label': 'White'},
 ]
 
-CKEDITOR_5_CUSTOM_CSS = 'path_to.css'  # optional
+# Optional custom CSS (used for styling the editor content)
+CKEDITOR_5_CUSTOM_CSS = 'path_to.css'
+
+# Main CKEditor 5 configuration
 CKEDITOR_5_CONFIGS = {
     'default': {
         'toolbar': {
-            'items': ['heading', '|', 'bold', 'italic', 'link',
-                      'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
-        }
-
-    },
-    'extends': {
-        'blockToolbar': [
-            'paragraph', 'heading1', 'heading2', 'heading3',
-            '|',
-            'bulletedList', 'numberedList',
-            '|',
-            'blockQuote',
-        ],
-        'toolbar': {
-            'items': ['heading', '|', 'outdent', 'indent', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
-                      'code', 'subscript', 'superscript', 'highlight', '|', 'codeBlock', 'sourceEditing', 'insertImage',
-                      'bulletedList', 'numberedList', 'todoList', '|', 'blockQuote', 'imageUpload', '|',
-                      'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
-                      'insertTable',
-                      ],
+            'items': [
+                'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', 'highlight', '|',
+                'fontColor', 'fontBackgroundColor', 'fontSize', 'fontFamily', '|',
+                'link', 'code', 'subscript', 'superscript', '|',
+                'bulletedList', 'numberedList', 'todoList', '|',
+                'outdent', 'indent', 'alignment', '|',
+                'blockQuote', 'codeBlock', 'sourceEditing', '|',
+                'insertTable', 'mediaEmbed', 'imageUpload', '|',
+                'undo', 'redo', 'removeFormat', '|',
+                'exportPdf', 'exportWord', '|',
+                'findAndReplace'
+            ],
         },
         'image': {
-            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
-                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side', '|'],
-            'styles': [
-                'full',
-                'side',
-                'alignLeft',
-                'alignRight',
-                'alignCenter',
-            ]
-
+            'toolbar': [
+                'imageTextAlternative', '|',
+                'imageStyle:alignLeft', 'imageStyle:alignCenter',
+                'imageStyle:alignRight', 'imageStyle:side'
+            ],
+            'styles': ['full', 'side', 'alignLeft', 'alignRight', 'alignCenter']
         },
         'table': {
-            'contentToolbar': ['tableColumn', 'tableRow', 'mergeTableCells',
-                               'tableProperties', 'tableCellProperties'],
+            'contentToolbar': [
+                'tableColumn', 'tableRow', 'mergeTableCells',
+                'tableProperties', 'tableCellProperties'
+            ],
             'tableProperties': {
-                'borderColors': customColorPalette,
-                'backgroundColors': customColorPalette
+                'borderColors': CUSTOM_COLOR_PALETTE,
+                'backgroundColors': CUSTOM_COLOR_PALETTE,
             },
             'tableCellProperties': {
-                'borderColors': customColorPalette,
-                'backgroundColors': customColorPalette
+                'borderColors': CUSTOM_COLOR_PALETTE,
+                'backgroundColors': CUSTOM_COLOR_PALETTE,
             }
         },
         'heading': {
@@ -280,20 +260,53 @@ CKEDITOR_5_CONFIGS = {
                 {'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph'},
                 {'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1'},
                 {'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2'},
-                {'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3'}
+                {'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3'},
+                {'model': 'heading4', 'view': 'h4', 'title': 'Heading 4', 'class': 'ck-heading_heading4'},
+                {'model': 'heading5', 'view': 'h5', 'title': 'Heading 5', 'class': 'ck-heading_heading5'},
             ]
-        }
-    },
-    'list': {
-        'properties': {
-            'styles': 'true',
-            'startIndex': 'true',
-            'reversed': 'true',
-        }
+        },
+        'list': {
+            'properties': {
+                'styles': True,
+                'startIndex': True,
+                'reversed': True,
+            }
+        },
+        'fontSize': {
+            'options': [9, 11, 13, 'default', 17, 19, 21],
+            'supportAllValues': True
+        },
+        'fontFamily': {
+            'options': [
+                'default', 'Arial, sans-serif', 'Courier New, Courier, monospace',
+                'Georgia, serif', 'Lucida Sans Unicode, Lucida Grande, sans-serif',
+                'Tahoma, Geneva, sans-serif', 'Times New Roman, Times, serif',
+                'Trebuchet MS, Helvetica, sans-serif', 'Verdana, Geneva, sans-serif'
+            ],
+            'supportAllValues': True
+        },
+        'fontColor': {
+            'colors': CUSTOM_COLOR_PALETTE,
+            'columns': 5,
+            'documentColors': 10,
+        },
+        'fontBackgroundColor': {
+            'colors': CUSTOM_COLOR_PALETTE,
+            'columns': 5,
+            'documentColors': 10,
+        },
+        'mediaEmbed': {
+            'previewsInData': True,
+        },
+        'htmlEmbed': {
+            'showPreviews': True
+        },
+        'removePlugins': ['CKBox', 'CKFinderUploadAdapter'],  # Optional: remove premium file features
     }
 }
 
-# Define a constant in settings.py to specify file upload permissions
-CKEDITOR_5_FILE_UPLOAD_PERMISSION = "staff"  # Possible values: "staff", "authenticated", "any"
+# Optional: restrict who can upload files/images
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = "staff"  # Options: "staff", "authenticated", "any"
+
 
 AUTH_USER_MODEL = "users.CustomUser"
