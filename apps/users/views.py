@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import JsonResponse
@@ -83,7 +85,8 @@ class LoginView(View):
             else:
                 request.session.set_expiry(0)
 
-            return JsonResponse({'success': True, 'redirect_url': '/', 'message': 'आपका लॉगिन सफलतापूर्वक हुआ है।'})  # Home page
+            return JsonResponse(
+                {'success': True, 'redirect_url': '/', 'message': 'आपका लॉगिन सफलतापूर्वक हुआ है।'})  # Home page
 
         else:
             return JsonResponse({'success': False, 'message': 'ईमेल या पासवर्ड गलत है।'})
@@ -100,7 +103,7 @@ class ForgotPasswordView(View):
             email = data.get('email')
         else:
             email = request.POST.get('email')
-        
+
         user = User.objects.filter(email=email).first()
         if user:
             token_generator = PasswordResetTokenGenerator()
@@ -159,33 +162,34 @@ class ResetPasswordView(View):
             token = request.POST.get('token')
             password = request.POST.get('password')
             confirm_password = request.POST.get('confirm-password')
-        
+
         if not (uidb64 and token):
             return JsonResponse({'success': False, 'message': 'लिंक अमान्य है।'})
-        
+
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-        
+
         token_generator = PasswordResetTokenGenerator()
         if user and token_generator.check_token(user, token):
             if not password or not confirm_password:
                 return JsonResponse({'success': False, 'message': 'कृपया सभी फ़ील्ड भरें।'})
-            
+
             if password != confirm_password:
                 return JsonResponse({'success': False, 'message': 'पासवर्ड मेल नहीं खा रहे हैं।'})
-            
+
             user.set_password(password)
             user.has_set_password = True
             user.save()
-            return JsonResponse({'success': True, 'message': 'पासवर्ड सफलतापूर्वक बदल दिया गया है। अब आप लॉगिन कर सकते हैं।'})
+            return JsonResponse(
+                {'success': True, 'message': 'पासवर्ड सफलतापूर्वक बदल दिया गया है। अब आप लॉगिन कर सकते हैं।'})
         else:
             return JsonResponse({'success': False, 'message': 'लिंक अमान्य या समाप्त हो गया है।'})
 
 
-class ChangePasswordView(View):
+class ChangePasswordView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'change_password.html')
 
@@ -252,7 +256,7 @@ def user_suggestions(request):
     return JsonResponse({'users': suggestions})
 
 
-class UpdateProfileView(View):
+class UpdateProfileView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'update_profile.html')
 
@@ -277,4 +281,5 @@ class UpdateProfileView(View):
 
             return JsonResponse({'success': True, 'message': 'प्रोफाइल सफलतापूर्वक अपडेट किया गया।'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': 'प्रोफाइल अपडेट करने में त्रुटि हुई। कृपया पुनः प्रयास करें।'})
+            return JsonResponse(
+                {'success': False, 'message': 'प्रोफाइल अपडेट करने में त्रुटि हुई। कृपया पुनः प्रयास करें।'})

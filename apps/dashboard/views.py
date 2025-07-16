@@ -31,7 +31,7 @@ class ContactView(View):
             contact.save()
             return JsonResponse({'status': 'success', 'message': 'Message sent successfully!'})
         else:
-            return JsonResponse({'status': 'error', 'message': 'Please fill in all fields.'})
+            return JsonResponse({'status': 'error', 'message': 'Please fill the all fields.'})
 
 
 class UserSubscription(View):
