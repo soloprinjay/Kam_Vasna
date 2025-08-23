@@ -144,6 +144,52 @@
             max-width: 70px;
         }
     }
+
+    /* Custom popup animations */
+    .popup-enter {
+        animation: popupEnter 0.3s ease-out forwards;
+    }
+
+    .popup-exit {
+        animation: popupExit 0.3s ease-in forwards;
+    }
+
+    @keyframes popupEnter {
+        from {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes popupExit {
+        from {
+            transform: scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+    }
+
+    /* Dark mode support for popup */
+    .dark .mention-suggestions {
+        background: #1f2937;
+        border-color: #374151;
+    }
+
+    .dark .mention-suggestion {
+        border-bottom-color: #374151;
+        color: #d1d5db;
+    }
+
+    .dark .mention-suggestion:hover {
+        background-color: #374151;
+    }
 </style>
 
 <section class="max-w-4xl mx-auto px-4 py-12">
@@ -404,6 +450,13 @@
                                         data-comment-id="{{ comment.id }}">
                                     <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">{{ comment.likes }}</span>
                                 </button>
+                                {% if request.user == comment.user %}
+                                <button class="delete-btn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition duration-300"
+                                        data-comment-id="{{ comment.id }}"
+                                        onclick="deleteComment({{ comment.id }})">
+                                    <i class="fas fa-trash mr-1"></i> हटाएं
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -428,9 +481,52 @@
                    value="https://kamvasna.com/story/demo-link"/>
         </div>
         <button id="copy-link-btn"
-                class="w-full bg-orange-600 dark:bg-dark-accent text-white font-bold py-2 px-4 rounded hover:bg-orange-700 dark:hover:bg-dark-accent-hover transition">
+                class="w-full bg-orange-600 dark:bg-dark-accent text-white font-bold py-2 px-4 rounded hover:bg-orange-700 dark:hover:text-dark-accent-hover transition">
             Copy Link
         </button>
+    </div>
+</div>
+
+<!-- Delete Comment Confirmation Popup -->
+<div id="delete-comment-popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+    <div class="bg-white dark:bg-dark-card rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="delete-popup-content">
+        <!-- Popup Header -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 dark:text-dark-text">Delete Comment</h3>
+            </div>
+            <button type="button"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl focus:outline-none transition-colors"
+                    onclick="closeDeletePopup()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Popup Message -->
+        <div class="mb-6">
+            <p class="text-gray-600 dark:text-dark-text-secondary text-center leading-relaxed">
+                क्या आप वाकई इस टिप्पणी को हटाना चाहते हैं?<br>
+                <span class="text-sm text-gray-500 dark:text-gray-400">यह क्रिया वापस नहीं की जा सकती।</span>
+            </p>
+        </div>
+        
+        <!-- Popup Actions -->
+        <div class="flex space-x-3">
+            <button type="button"
+                    class="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                    onclick="closeDeletePopup()">
+                रद्द करें
+            </button>
+            <button type="button"
+                    id="confirm-delete-btn"
+                    class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center space-x-2">
+                <i class="fas fa-trash text-sm"></i>
+                <span>हटाएं</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -602,6 +698,17 @@
 
         // Function to add a comment to the DOM
         function addCommentToDOM(comment, container) {
+            const currentUserId = '{{ request.user.id }}';
+            const isOwnComment = currentUserId && currentUserId !== 'None' && comment.user.id == currentUserId;
+            
+            const deleteButtonHTML = isOwnComment ? `
+                <button class="delete-btn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition duration-300"
+                        data-comment-id="${comment.id}"
+                        onclick="deleteComment(${comment.id})">
+                    <i class="fas fa-trash mr-1"></i> हटाएं
+                </button>
+            ` : '';
+
             const commentHTML = `
             <div class="comment-item bg-orange-50 dark:bg-dark-bg p-6 rounded-xl" data-comment-id="${comment.id}">
                 <div class="flex items-start space-x-4">
@@ -625,6 +732,7 @@
                             <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300" data-comment-id="${comment.id}">
                                 <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">${comment.likes}</span>
                             </button>
+                            ${deleteButtonHTML}
                         </div>
                     </div>
                 </div>
@@ -701,6 +809,112 @@
         const ws_path = `${ws_scheme}://${window.location.host}/ws/comments/{{ story.id }}/`;
         const socket = new WebSocket(ws_path);
 
+        // Add event listeners to existing reply buttons
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userName = this.dataset.userName;
+                commentBody.value = `@${userName} `;
+                commentBody.focus();
+                // Scroll to comment form
+                commentForm.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Function to delete a comment
+        window.deleteComment = function(commentId) {
+            // Store the comment ID for deletion
+            window.commentToDelete = commentId;
+            
+            // Show the custom popup
+            showDeletePopup();
+        };
+
+        // Function to show delete confirmation popup
+        function showDeletePopup() {
+            const popup = document.getElementById('delete-comment-popup');
+            const popupContent = document.getElementById('delete-popup-content');
+            
+            popup.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                popupContent.classList.remove('scale-95', 'opacity-0');
+                popupContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // Add event listener to confirm button
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            confirmBtn.onclick = function() {
+                performCommentDeletion();
+            };
+
+            // Add click outside to close functionality
+            popup.onclick = function(e) {
+                if (e.target === popup) {
+                    closeDeletePopup();
+                }
+            };
+
+            // Add escape key to close functionality
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+
+        // Function to handle escape key
+        function handleEscapeKey(e) {
+            if (e.key === 'Escape') {
+                closeDeletePopup();
+            }
+        }
+
+        // Function to close delete confirmation popup
+        function closeDeletePopup() {
+            const popup = document.getElementById('delete-comment-popup');
+            const popupContent = document.getElementById('delete-popup-content');
+            
+            // Trigger animation
+            popupContent.classList.remove('scale-100', 'opacity-100');
+            popupContent.classList.add('scale-95', 'opacity-0');
+            
+            // Hide popup after animation
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 300);
+            
+            // Clear the stored comment ID
+            window.commentToDelete = null;
+
+            // Remove event listeners
+            popup.onclick = null;
+            document.removeEventListener('keydown', handleEscapeKey);
+        }
+
+        // Function to perform the actual comment deletion
+        function performCommentDeletion() {
+            const commentId = window.commentToDelete;
+            if (!commentId) return;
+
+            const userId = '{{ request.user.id }}';
+            if (!userId || userId === 'None') {
+                window.location = "{% url 'users:login-user' %}";
+                return;
+            }
+
+            // Close the popup
+            closeDeletePopup();
+
+            // Send delete request via WebSocket
+            const deleteData = {
+                action: 'delete_comment',
+                user_id: userId,
+                comment_id: commentId
+            };
+            socket.send(JSON.stringify(deleteData));
+        }
+
+        // Make closeDeletePopup globally accessible
+        window.closeDeletePopup = closeDeletePopup;
+
+        // Update WebSocket message handling to support comment deletion
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             
@@ -710,6 +924,22 @@
                     addCommentToDOM(comment, commentsContainer);
                 });
                 updateCommentCount();
+                return;
+            }
+
+            // Handle comment deletion
+            if (data.type === 'comment_deleted') {
+                const commentElement = document.querySelector(`[data-comment-id="${data.comment_id}"]`);
+                if (commentElement) {
+                    commentElement.remove();
+                    updateCommentCount();
+                }
+                return;
+            }
+
+            // Handle delete errors
+            if (data.type === 'delete_error') {
+                alert('Error: ' + data.error);
                 return;
             }
 
@@ -751,17 +981,6 @@
             addCommentToDOM(data, commentsContainer);
             updateCommentCount();
         };
-
-        // Add event listeners to existing reply buttons
-        document.querySelectorAll('.reply-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const userName = this.dataset.userName;
-                commentBody.value = `@${userName} `;
-                commentBody.focus();
-                // Scroll to comment form
-                commentForm.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
     });
 </script>
 

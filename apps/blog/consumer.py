@@ -128,6 +128,16 @@ class CommentConsumer(AsyncWebsocketConsumer):
                     'message': like_data
                 }
             )
+        elif action == 'delete_comment':
+            delete_data = await self.delete_comment(text_data_json)
+            # Send message to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'delete_message',
+                    'message': delete_data
+                }
+            )
         elif action == 'rate_post':
             print(f"Processing rating: {text_data_json}")
             rating_data = await self.save_rating(text_data_json)
@@ -147,6 +157,11 @@ class CommentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message))
 
     async def like_message(self, event):
+        message = event['message']
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps(message))
+
+    async def delete_message(self, event):
         message = event['message']
         # Send message to WebSocket
         await self.send(text_data=json.dumps(message))
@@ -309,6 +324,46 @@ class CommentConsumer(AsyncWebsocketConsumer):
             print(f"Error saving rating: {str(e)}")
             return {
                 'error': str(e)
+            }
+
+    @database_sync_to_async
+    def delete_comment(self, data):
+        """Delete a comment - users can only delete their own comments"""
+        try:
+            user_id = data.get('user_id')
+            comment_id = data.get('comment_id')
+
+            if not user_id or not comment_id:
+                raise ValueError("User ID and Comment ID are required")
+
+            user = get_user_model().objects.get(id=user_id)
+            comment = Comment.objects.get(id=comment_id)
+
+            # Check if the user owns this comment
+            if comment.user != user:
+                raise ValueError("You can only delete your own comments")
+
+            # Store comment info before deletion
+            comment_data = {
+                'id': comment.id,
+                'post_id': comment.post.id
+            }
+
+            # Delete the comment
+            comment.delete()
+
+            return {
+                'success': True,
+                'message': 'Comment deleted successfully',
+                'comment_id': comment_id,
+                'type': 'comment_deleted'
+            }
+
+        except Exception as e:
+            print(f"Error deleting comment: {str(e)}")
+            return {
+                'error': str(e),
+                'type': 'delete_error'
             }
 
     async def rating_message(self, event):

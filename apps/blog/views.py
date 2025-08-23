@@ -2,12 +2,12 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from hitcount.utils import get_hitcount_model
 from hitcount.views import HitCountMixin
 
-from .models import Post, Category
+from .models import Post, Category, Comment
 
 
 # Create your views here.
@@ -248,3 +248,41 @@ class PostLikeView(View):
             return JsonResponse({'likes': post.likes, 'liked': True})
         except Post.DoesNotExist:
             return JsonResponse({'error': 'Post not found'}, status=404)
+
+
+class DeleteCommentView(LoginRequiredMixin, View):
+    """View to delete a comment - users can only delete their own comments"""
+
+    def post(self, request, comment_id):
+        try:
+            comment = get_object_or_404(Comment, id=comment_id)
+
+            # Check if the user owns this comment
+            if comment.user != request.user:
+                return JsonResponse({
+                    'error': 'You can only delete your own comments'
+                }, status=403)
+
+            # Store comment info for WebSocket notification
+            comment_data = {
+                'id': comment.id,
+                'post_id': comment.post.id
+            }
+
+            # Delete the comment
+            comment.delete()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'Comment deleted successfully',
+                'comment_id': comment_id
+            })
+
+        except Comment.DoesNotExist:
+            return JsonResponse({
+                'error': 'Comment not found'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'error': f'An error occurred: {str(e)}'
+            }, status=500)
