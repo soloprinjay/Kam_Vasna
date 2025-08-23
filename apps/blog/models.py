@@ -69,5 +69,9 @@ class Comment(models.Model):
     liked_by = models.ManyToManyField('users.CustomUser', related_name='liked_comments', blank=True)
     mentions = models.ManyToManyField('users.CustomUser', related_name='mentioned_in_comments', blank=True)
 
+    @property
+    def likes(self):
+        return self.liked_by.count()
+
     def __str__(self):
         return f'{self.user} - {self.body[:20]}'

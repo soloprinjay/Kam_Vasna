@@ -1,9 +1,63 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Page Not Found - Kam Vasna{% endblock %}
 
 {% block content %}
-<section class="text-center py-16">
-    <h1 class="text-4xl font-bold text-orange-600 dark:text-orange-400">404 - कहानी नहीं मिली</h1>
-    <p class="mt-4 text-gray-600 dark:text-gray-300">माफ कीजिए, हम आपकी चुनी हुई कहानी नहीं ढूंढ सके।</p>
-    <a href="/" class="mt-6 inline-block bg-orange-600 dark:bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-700 dark:hover:bg-orange-600 transition-colors">होम पर वापस जाएं</a>
-</section>
+<div class="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
+    <div class="max-w-md w-full text-center">
+        <!-- Error Icon -->
+        <div class="mb-8">
+            <div class="w-32 h-32 mx-auto bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <i class="fas fa-search text-blue-600 dark:text-blue-400 text-6xl"></i>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">404</h1>
+            <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+                पेज नहीं मिला
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                क्षमा करें, आप जिस पेज की तलाश कर रहे हैं वह मौजूद नहीं है।<br>
+                यह हटा दिया गया हो सकता है या गलत URL हो सकता है।
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4">
+            <a href="{% url 'dashboard:home' %}" 
+               class="inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                <i class="fas fa-home mr-2"></i>
+                होम पेज पर जाएं
+            </a>
+            
+            <a href="{% url 'dashboard:stories' %}" 
+               class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                <i class="fas fa-book-open mr-2"></i>
+                कहानियां देखें
+            </a>
+
+            <button onclick="history.back()" 
+                    class="inline-block w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                पिछले पेज पर जाएं
+            </button>
+        </div>
+
+        <!-- Search Suggestion -->
+        <div class="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <h3 class="font-semibold text-gray-800 dark:text-white mb-2">क्या आप कुछ खोज रहे हैं?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                हमारे सर्च फंक्शन का उपयोग करें
+            </p>
+            <a href="{% url 'blog:search' %}" 
+               class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded transition-colors">
+                <i class="fas fa-search mr-2"></i>
+                सर्च करें
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
