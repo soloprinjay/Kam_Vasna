@@ -41,21 +41,24 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            clean_title = re.sub(r'[^a-zA-Z0-9\s-]', '', self.title)  # Remove special characters
-            self.slug = slugify(clean_title)  # Convert title to slug
+            clean_title = re.sub(r'[^a-zA-Z0-9\s-]', '', self.title)
+            self.slug = slugify(clean_title)
 
-        # Calculate trending score based on views, likes, and recency
-        views = self.hit_count_generic.first().hits if self.hit_count_generic.first() else 0
-        likes = self.likes
-        hours_since_creation = (timezone.now() - self.created_on).total_seconds() / 3600
-
-        # Trending score formula: (views + likes * 2) / (hours_since_creation + 2)^1.5
-        self.trending_score = (views + likes * 2) / ((hours_since_creation + 2) ** 1.5)
-
-        # Mark as trending if score is above threshold
-        self.is_trending = self.trending_score > 10.0
-
+        # Save the object first to ensure `created_on` is set
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+
+        # Only calculate trending score if `created_on` is available
+        if self.created_on:
+            views = self.hit_count_generic.first().hits if self.hit_count_generic.first() else 0
+            likes = self.likes
+            hours_since_creation = (timezone.now() - self.created_on).total_seconds() / 3600
+
+            self.trending_score = (views + likes * 2) / ((hours_since_creation + 2) ** 1.5)
+            self.is_trending = self.trending_score > 10.0
+
+            # Save again to update trending fields
+            super().save(update_fields=['trending_score', 'is_trending'])
 
     def __str__(self):
         return self.title
