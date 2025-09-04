@@ -10,6 +10,8 @@ services:
     command: daphne -b 0.0.0.0 -p 8000 core.asgi:application
     volumes:
       - .:/code
+      - static_volume:/code/staticfiles
+      - media_volume:/code/media
 #    ports:
 #      - "8000:8000"
     env_file:
@@ -39,7 +41,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static_volume:/code/staticfiles
-      - ./media:/media
+      - media_volume:/code/media
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - web
@@ -47,3 +49,5 @@ services:
 volumes:
   postgres_data:
   static_volume:
+  media_volume:
+
