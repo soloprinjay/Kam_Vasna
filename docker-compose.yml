@@ -38,7 +38,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./static:/static
+      - static_volume:/code/staticfiles
       - ./media:/media
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
