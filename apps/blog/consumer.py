@@ -16,12 +16,19 @@ from .models import Comment, Post
 class CommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
 
-        if self.scope["user"] == AnonymousUser():
-            await self.close()
-            return
+        # if self.scope["user"] == AnonymousUser():
+        #     await self.close()
+        #     return
+        #
+        # self.post_id = self.scope['url_route']['kwargs']['post_id']
+        # self.room_group_name = f'comments_{self.post_id}'
 
-        self.post_id = self.scope['url_route']['kwargs']['post_id']
-        self.room_group_name = f'comments_{self.post_id}'
+        self.post_id = self.scope['url_route']['kwargs'].get('post_id')
+        self.room_group_name = f"comments_{self.post_id}" if self.post_id else None
+
+        if not self.scope["user"].is_authenticated:
+            await self.close(code=4401)
+            return
 
         # Join room group
         await self.channel_layer.group_add(
@@ -98,10 +105,13 @@ class CommentConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        # await self.channel_layer.group_discard(
+        #     self.room_group_name,
+        #     self.channel_name
+        # )
+        room = getattr(self, "room_group_name", None)
+        if room:
+            await self.channel_layer.group_discard(room, self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
