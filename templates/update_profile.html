@@ -59,14 +59,14 @@
                               placeholder="अपने बारे में कुछ लिखें...">{{ user.self_info|default:'' }}</textarea>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="flex justify-end space-x-4">
+               <!-- Submit Button -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <a href="{% url 'users:change_password' %}"
-                       class="px-6 py-3 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-600 transition duration-300">
+                    class="inline-flex items-center justify-center px-6 py-3 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-600 transition duration-300">
                         पासवर्ड बदलें
                     </a>
                     <button type="submit"
-                            class="px-6 py-3 bg-orange-600 dark:bg-dark-accent text-white rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
+                            class="inline-flex items-center justify-center px-6 py-3 bg-orange-600 dark:bg-dark-accent text-white rounded-lg hover:bg-orange-700 dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-dark-accent transition duration-300">
                         प्रोफाइल अपडेट करें
                     </button>
                 </div>

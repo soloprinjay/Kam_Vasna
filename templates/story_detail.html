@@ -341,10 +341,10 @@
                         <div class="w-full">
                             <div class="flex items-center justify-between mt-4">
                                 <a href="{% url 'blog:story_detail' slug=recent_post.slug %}"
-                                   class="text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
+                                   class="text-sm text-orange-600 dark:text-dark-accent hover:text-orange-800 dark:hover:text-dark-accent-hover font-semibold transition duration-300">
                                     पूरी कहानी पढ़ें
                                 </a>
-                                <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
                                     <a href="{% url 'blog:story_detail' slug=recent_post.slug %}"
                                        class="flex items-center space-x-2 text-gray-600 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,7 +402,7 @@
                             id="comment-body"
                             class="w-full p-4 border border-orange-200 dark:border-dark-border dark:bg-dark-card dark:text-dark-text rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-600 dark:focus:ring-dark-accent focus:border-transparent transition duration-200"
                             rows="4"
-                            placeholder="अपनी टिप्पणी लिखें... (Use @ to mention users)"
+                            placeholder="अपनी टिप्पणी लिखें..."
                             required
                     ></textarea>
                     <div id="mention-suggestions" class="mention-suggestions"></div>
@@ -418,9 +418,9 @@
             </form>
 
             <!-- Comments List -->
-            <div id="comments-container" class="space-y-6 max-h-[500px] overflow-y-auto pr-4">
+            <div id="comments-container" class="space-y-6 max-h-[500px] overflow-y-auto overflow-x-hidden pr-4">
                 {% for comment in comments %}
-                <div class="comment-item bg-orange-50 dark:bg-dark-bg p-6 rounded-xl"
+                <div class="comment-item bg-orange-50 dark:bg-dark-bg p-6 rounded-xl overflow-x-auto"
                      data-comment-id="{{ comment.id }}">
                     <div class="flex items-start space-x-4">
                         <!-- User Avatar -->
@@ -437,21 +437,21 @@
                                 <span class="text-[12px] text-gray-500 dark:text-dark-text-secondary">{{ comment.timestamp|timesince }} पहले</span>
                             </div>
 
-                            <p class="text-gray-600 dark:text-dark-text-secondary">{{ comment.body }}</p>
+                            <p class="text-gray-600 dark:text-dark-text-secondary pr-3">{{ comment.body }}</p>
 
                             <!-- Comment Actions -->
-                            <div class="flex items-center space-x-4 mt-4">
-                                <button class="reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                            <div class="flex items-center space-x-3 mt-4 w-64 pr-3">
+                                <button class="text-sm reply-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
                                         data-comment-id="{{ comment.id }}"
                                         data-user-name="{{ comment.user.get_full_name|default:comment.user.email }}">
                                     <i class="fas fa-reply mr-1"></i> जवाब दें
                                 </button>
-                                <button class="like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
+                                <button class="text-sm like-btn text-gray-500 dark:text-dark-text-secondary hover:text-orange-600 dark:hover:text-dark-accent transition duration-300"
                                         data-comment-id="{{ comment.id }}">
                                     <i class="fas fa-thumbs-up mr-1"></i> पसंद <span class="like-count">{{ comment.likes }}</span>
                                 </button>
                                 {% if request.user == comment.user %}
-                                <button class="delete-btn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition duration-300"
+                                <button class="text-sm delete-btn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition duration-300"
                                         data-comment-id="{{ comment.id }}"
                                         onclick="deleteComment({{ comment.id }})">
                                     <i class="fas fa-trash mr-1"></i> हटाएं

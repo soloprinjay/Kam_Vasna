@@ -19,7 +19,7 @@
 
     <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">
+            <h1 class="sm:text-4xl text-3xl md:text-5xl font-bold mb-4">
                 {% if search_query %}
                     "{{ search_query }}" के लिए खोज परिणाम
                 {% else %}
@@ -206,9 +206,10 @@
                             </div>
                             
                             <a href="{% url 'blog:story_detail' slug=story.slug %}"
-                            class="w-full mt-4 block bg-orange-600 dark:bg-dark-bg hover:bg-orange-700 dark:hover:bg-dark-accent text-orange-600 dark:text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
+                            class="w-full mt-4 block bg-orange-600 dark:bg-dark-bg hover:bg-orange-700 dark:hover:bg-dark-accent text-white text-center px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
                                 पूरी कहानी पढ़ें
                             </a>
+
                         </div>
                     </div>
                 </div>
